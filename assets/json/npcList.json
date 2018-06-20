@@ -1,0 +1,30 @@
+{
+  "Soldier Caravan": {
+    "name": "Soldier Caravan",
+    "id": 1,
+    "description": "A caravan of soldiers preparing for a journey.",
+    "locationName": "mainMap",
+    "near": "Westwend",
+    "xDelta": 0,
+    "yDelta": 1,
+    "inventory": [],
+    "money": [1, 1, 1],
+    "level": 1,
+    "baseStats": [5, 5, 10, 5]
+  },
+  "Westwend Trader": {
+    "name": "Westwend Trader",
+    "id": 2,
+    "description": "A trader in the village of Westwend.",
+    "locationName": "Westwend",
+    "on": "MARKET",
+    "inventory": [
+      "4001",
+      "4001",
+      "4001"
+    ],
+    "money": [1, 1, 1],
+    "level": 1,
+    "baseStats": [5, 5, 10, 5]
+  }
+}

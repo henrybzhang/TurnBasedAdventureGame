@@ -1,0 +1,36 @@
+.container {
+    clear: both;
+    display: table;
+    width: 100%
+}
+
+#main {
+    background-color: brown;
+    float: left;
+    width: 50%;
+}
+
+#playerInfo {
+    background-color: aquamarine;
+    float: left;
+    width: 25%;
+}
+
+#otherInfo {
+    background-color: fuchsia;
+    float: left;
+    width: 25%;
+}
+
+div {
+    height: 80vh;
+}
+
+button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    text-align: center;
+    font-size: 16px;
+    height: 9vh;
+    width: 33.3%;
+}

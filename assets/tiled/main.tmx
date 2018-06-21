@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" tiledversion="2018.04.18" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="64" tileheight="64" infinite="0" nextobjectid="1">
  <tileset firstgid="1" source="medieval_tilesheet.tsx"/>
- <layer name="Terrain" width="32" height="32">
+ <layer name="Bot" width="32" height="32">
   <data encoding="csv">
 74,74,74,74,74,74,74,76,76,76,76,76,76,76,76,76,76,76,76,76,76,76,74,74,74,74,74,74,74,74,74,74,
 74,74,2,74,74,74,74,76,76,76,76,76,76,76,76,76,76,76,76,76,76,76,74,74,74,74,74,74,74,110,74,74,
@@ -37,7 +37,7 @@
 76,76,76,76,76,76,76,76,76,76,76,76,76,76,76,76,74,74,74,74,74,74,74,74,74,74,74,74,74,112,3,3
 </data>
  </layer>
- <layer name="Structures" width="32" height="32">
+ <layer name="Top" width="32" height="32">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,116,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

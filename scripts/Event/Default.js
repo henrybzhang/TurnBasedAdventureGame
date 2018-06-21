@@ -4,11 +4,15 @@ const BUTTON_SET = ["Interact", "North", "Inventory", "West", "South", "East"];
 
 export class Default extends Event {
 
+    /**
+     * @param {Tile} tile - A tile on a plot
+     */
     constructor(tile) {
         super(tile.name, tile.desc, BUTTON_SET);
+        console.log(tile.name);
     }
 
-    chooseEvent(command, player) {
+    chooseNewEvent(command, player) {
         switch(command) {
             case "Interact":
                 break;
@@ -27,5 +31,7 @@ export class Default extends Event {
                 player.move(1, 0);
                 break;
         }
+
+        return new Default(player.getTile());
     }
 }

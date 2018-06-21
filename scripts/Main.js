@@ -1,17 +1,25 @@
 "use strict";
 
-import {Plot} from './Thing/Place/Plot.js';
 import {Default} from "./Event/Default.js";
-import {Plottable} from "./Thing/Plottable.js";
-
-let plot = readInMap("./assets/plot/csv/mainMap_Terrain.csv");
-let player = new Plottable("ME");
+import {Event} from "./Event/Event.js";
+import {Mobile} from "./Thing/Entity/Mobile.js";
+import {Place} from "./Thing/Place/Place.js";
+import {Tile} from "./Thing/Place/Tile.js";
 
 function start() {
+    initialize();
     createDisplay();
-    let event = new Default(player.getTile(plot));
 
-    updateDisplay(event);
+    let player = new Mobile("ME", "myDesc", Place.placeList.find(p => p.name === "main"),
+        0, 0, 1, [10, 10, 10, 10], null);
+
+    let event = new Default(player.getTile());
+    Event.updateDisplay(event, player);
+}
+
+function initialize() {
+    Tile.createTiles();
+    Place.createPlaces();
 }
 
 function createDisplay() {
@@ -21,13 +29,29 @@ function createDisplay() {
     let container = document.createElement("div");
     container.className = "container";
 
+
     let playerInfo = document.createElement("div");
-    let otherInfo = document.createElement("div");
     playerInfo.id = "playerInfo";
+
+
+    let otherInfo = document.createElement("div");
     otherInfo.id = "otherInfo";
+
+    let plotContainer = document.createElement("div");
+    plotContainer.id = "plotContainer";
+    let plot = document.createElement("img");
+    plot.id = "image";
+    let playerIcon = document.createElement("img");
+    playerIcon.id = "playerIcon";
+    playerIcon.src = "assets/playerIcon.jpeg";
+    plotContainer.appendChild(plot);
+    plotContainer.appendChild(playerIcon);
+    otherInfo.appendChild(plotContainer);
+
 
     let mainText = document.createElement("div");
     mainText.id = "main";
+    mainText.style.width = (body.clientWidth - 640) + "px";
 
     container.appendChild(playerInfo);
     container.appendChild(mainText);
@@ -41,32 +65,5 @@ function createDisplay() {
         body.appendChild(button);
     }
 }
-
-/**
- * @param event - A subclass of the base class Event
- */
-function updateDisplay(event) {
-
-    // update buttons
-    let currentButtonSet = document.getElementsByTagName("button");
-    for(let i = 0; i < event.buttonSet.length; i++) {
-        currentButtonSet[i].innerHTML = event.buttonSet[i];
-        currentButtonSet[i].addEventListener("click",
-            function() { event.chooseEvent(event.buttonSet[i], player) });
-    }
-
-    // update mainText
-    let mainText = document.getElementById("main");
-    mainText.innerHTML = event.mainText;
-}
-
-// read in the map csv file
-function readInMap(filePath) {
-    let fileReader = new XMLHttpRequest();
-    fileReader.open("GET", filePath, false);
-    fileReader.send();
-    return new Plot(fileReader.responseText)
-}
-
 
 start();

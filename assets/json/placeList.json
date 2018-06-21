@@ -1,0 +1,34 @@
+{
+    "Westwend": {
+    "desc": "This is Westwend.",
+    "place": "main",
+    "xPos": 2,
+    "yPos": 2,
+    "size": 3,
+    "hasEntry": false,
+    "noticeBoard": [
+      "PROPAGANDA",
+      "QUEST_1"
+    ]
+  },
+  "Pirn": {
+    "desc": "This is Pirn.",
+    "place": "main",
+    "xPos": 29,
+    "yPos": 2,
+    "size": 3,
+    "hasEntry": false,
+    "noticeBoard": [
+      "PROPAGANDA"
+    ]
+  },
+  "Taedmorden": {
+    "desc": "This is Taedmorden.",
+    "place": "main",
+    "xPos": 30,
+    "yPos": 30,
+    "size": 6,
+    "hasEntry": true,
+    "noticeBoard": []
+  }
+}

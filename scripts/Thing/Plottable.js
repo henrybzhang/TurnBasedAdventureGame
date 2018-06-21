@@ -3,21 +3,16 @@ import {Thing} from "./Thing.js";
 /**
  * @member {Number} xPos - the x Position of this thing
  * @member {Number} yPos - the y Position of this thing
+ * @member {Place} place - the place of this thing
+ *
+ * A Thing that has a location on a map
  */
 export class Plottable extends Thing {
-    constructor(name) {
-        super(name);
+    constructor(name, desc, place, xPos, yPos) {
+        super(name, desc);
 
-        this.xPos = 0;
-        this.yPos = 0;
-    }
-
-    getTile(plot) {
-        return plot.getTile(this.xPos, this.yPos);
-    }
-
-    move(xDelta, yDelta) {
-        this.xPos += xDelta;
-        this.yPos += yDelta;
+        this.place = place;
+        this.xPos = xPos;
+        this.yPos = yPos;
     }
 }

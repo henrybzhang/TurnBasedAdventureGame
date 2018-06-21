@@ -1,31 +1,54 @@
-.container {
-    clear: both;
-    display: table;
-    width: 100%
-}
-
-#main {
-    background-color: brown;
-    float: left;
-    width: 50%;
-}
-
-#playerInfo {
-    background-color: aquamarine;
-    float: left;
-    width: 25%;
-}
-
-#otherInfo {
-    background-color: fuchsia;
-    float: left;
-    width: 25%;
-}
 
 div {
     height: 80vh;
 }
 
+.container {
+    clear: both;
+    display: table;
+    width: 100%;
+}
+
+/* mainText stuff */
+#main {
+    background-color: brown;
+    float: left;
+}
+
+
+/* playerInfo stuff */
+#playerInfo {
+    background-color: aquamarine;
+    float: left;
+    width: 320px;
+}
+
+
+/* otherInfo stuff */
+#otherInfo {
+    background-color: fuchsia;
+    float: left;
+    width: 320px;
+}
+
+#plotContainer {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    overflow: hidden;
+}
+
+img {
+    position: absolute;
+}
+
+#playerIcon {
+    top: 145px;
+    left: 145px;
+}
+
+
+/* button stuff */
 button {
     background-color: #4CAF50; /* Green */
     color: white;

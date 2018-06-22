@@ -5,10 +5,7 @@ export class Mobile extends Entity {
         super(name, desc, place, xPos, yPos, level, baseStats, inventory);
     }
 
-    getTile() {
-        return this.place.getTile(this.xPos, this.yPos);
-    }
-
+    // TODO: make movement update plot
     move(xDelta, yDelta) {
         this.xPos += xDelta;
         this.yPos += yDelta;

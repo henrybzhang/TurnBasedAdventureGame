@@ -1,3 +1,5 @@
+"use strict";
+
 import {Plottable} from "../Plottable.js";
 
 const MONEY_TYPES = 3;

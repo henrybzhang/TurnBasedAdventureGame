@@ -1,3 +1,6 @@
+p {
+    white-space: pre-wrap;
+}
 
 div {
     height: 80vh;
@@ -10,9 +13,13 @@ div {
 }
 
 /* mainText stuff */
-#main {
+#mainContainer {
     background-color: brown;
     float: left;
+}
+
+#mainText {
+
 }
 
 

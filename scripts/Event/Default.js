@@ -1,4 +1,5 @@
 import {Event} from './Event.js';
+import {Tile} from '../Thing/Place/Tile.js';
 
 const BUTTON_SET = ["Interact", "North", "Inventory", "West", "South", "East"];
 

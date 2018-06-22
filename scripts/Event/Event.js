@@ -32,8 +32,9 @@ export class Event {
         }
 
         // update mainText
-        let mainText = document.getElementById("main");
-        mainText.innerHTML = event.mainText;
+        let mainText = document.getElementById("mainText");
+        mainText.textContent = event.mainText;
+
 
         // update otherInfo
         let newImage = document.getElementById("image");

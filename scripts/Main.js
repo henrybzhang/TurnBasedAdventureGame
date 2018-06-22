@@ -1,16 +1,17 @@
 "use strict";
 
+// Place needs to be first because it is circular dependent on Plottable
+import {Place} from "./Thing/Place/Place.js";
+import {Mobile} from "./Thing/Entity/Mobile.js";
 import {Default} from "./Event/Default.js";
 import {Event} from "./Event/Event.js";
-import {Mobile} from "./Thing/Entity/Mobile.js";
-import {Place} from "./Thing/Place/Place.js";
 import {Tile} from "./Thing/Place/Tile.js";
 
 function start() {
     initialize();
     createDisplay();
 
-    let player = new Mobile("ME", "myDesc", Place.placeList.find(p => p.name === "main"),
+    let player = new Mobile("ME", "myDesc", "main",
         0, 0, 1, [10, 10, 10, 10], null);
 
     let event = new Default(player.getTile());
@@ -49,12 +50,15 @@ function createDisplay() {
     otherInfo.appendChild(plotContainer);
 
 
-    let mainText = document.createElement("div");
-    mainText.id = "main";
-    mainText.style.width = (body.clientWidth - 640) + "px";
+    let mainContainer = document.createElement("div");
+    mainContainer.id = "mainContainer";
+    mainContainer.style.width = (body.clientWidth - 640) + "px";
+    let mainText = document.createElement("p");
+    mainText.id = "mainText";
+    mainContainer.appendChild(mainText);
 
     container.appendChild(playerInfo);
-    container.appendChild(mainText);
+    container.appendChild(mainContainer);
     container.appendChild(otherInfo);
     body.appendChild(container);
 

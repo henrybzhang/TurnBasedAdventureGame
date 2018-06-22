@@ -8,6 +8,8 @@ String.prototype.format = function() {
 
 // synchronous reading to make sure everything is initialized before moving on
 export function readFile(filePath) {
+    console.log("Opening |{0}| to read.".format(filePath));
+
     let xhr = new XMLHttpRequest();
     xhr.open("GET", filePath, false);
     xhr.send();

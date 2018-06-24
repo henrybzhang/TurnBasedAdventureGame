@@ -1,4 +1,4 @@
-export class Thing {
+export default class Thing {
 
     /**
      * @param {String} name - the name of this

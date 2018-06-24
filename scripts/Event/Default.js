@@ -1,12 +1,12 @@
-import {Event} from './Event.js';
-import {Tile} from '../Thing/Place/Tile.js';
+import Event from './Event.js';
 
 const BUTTON_SET = ["Interact", "North", "Inventory", "West", "South", "East"];
 
-export class Default extends Event {
+// TODO: perhaps return this instead of making a new event every time
+export default class Default extends Event {
 
     /**
-     * @param {Tile} tile - A tile on a plot
+     * @param tile {Tile} A tile on a plot
      */
     constructor(tile) {
         super(tile.name, tile.desc, BUTTON_SET);
@@ -33,6 +33,6 @@ export class Default extends Event {
                 break;
         }
 
-        return new Default(player.getTile());
+        return player.getTile().getEvent();
     }
 }

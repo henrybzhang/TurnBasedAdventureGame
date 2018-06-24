@@ -1,7 +1,7 @@
 {
   "Westwend": {
     "desc": "This is Westwend.",
-    "place": "main",
+    "parentPlace": "main",
     "xPos": 2,
     "yPos": 2,
     "size": 3,
@@ -13,7 +13,7 @@
   },
   "Pirn": {
     "desc": "This is Pirn.",
-    "place": "main",
+    "parentPlace": "main",
     "xPos": 29,
     "yPos": 2,
     "size": 3,
@@ -24,7 +24,7 @@
   },
   "Taedmorden": {
     "desc": "This is Taedmorden.",
-    "place": "main",
+    "parentPlace": "main",
     "xPos": 30,
     "yPos": 30,
     "size": 6,

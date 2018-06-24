@@ -1,72 +1,46 @@
 "use strict";
 
 // Place needs to be first because it is circular dependent on Plottable
-import {Place} from "./Thing/Place/Place.js";
-import {Mobile} from "./Thing/Entity/Mobile.js";
-import {Default} from "./Event/Default.js";
-import {Event} from "./Event/Event.js";
-import {Tile} from "./Thing/Place/Tile.js";
+import Mobile from "./Thing/Mobile.js";
+import Default from "./Event/Default.js";
+import Event from "./Event/Event.js";
 
 function start() {
-    initialize();
     createDisplay();
 
-    let player = new Mobile("ME", "myDesc", "main",
-        0, 0, 1, [10, 10, 10, 10], null);
+    let startStats = {
+        "hp": 10,
+        "energy": 10,
+        "agility": 10,
+        "strength": 10
+    };
+    let player = new Mobile("ME", "myDesc", "main", 0, 0, 1, startStats, null);
 
     let event = new Default(player.getTile());
     Event.updateDisplay(event, player);
 }
 
-function initialize() {
-    Tile.createTiles();
-    Place.createPlaces();
-}
-
 function createDisplay() {
-    let body = document.getElementsByTagName("body")[0];
-
-    // contains the upper three divs: playerInfo, mainText, otherInfo
-    let container = document.createElement("div");
-    container.className = "container";
+    // contains the upper three divs: playerInfo, storyText, otherInfo
+    $("<div>", {id: "mainContainer"}).appendTo("body");
 
 
-    let playerInfo = document.createElement("div");
-    playerInfo.id = "playerInfo";
+    $("<div>", {id: "playerInfo"}).appendTo("#mainContainer");
 
 
-    let otherInfo = document.createElement("div");
-    otherInfo.id = "otherInfo";
-
-    let plotContainer = document.createElement("div");
-    plotContainer.id = "plotContainer";
-    let plot = document.createElement("img");
-    plot.id = "image";
-    let playerIcon = document.createElement("img");
-    playerIcon.id = "playerIcon";
-    playerIcon.src = "assets/playerIcon.jpeg";
-    plotContainer.appendChild(plot);
-    plotContainer.appendChild(playerIcon);
-    otherInfo.appendChild(plotContainer);
+    $("<div>", {id: "storyContainer"}).appendTo("#mainContainer");
+    $("<p>", {id: "storyText"}).appendTo("#storyContainer");
 
 
-    let mainContainer = document.createElement("div");
-    mainContainer.id = "mainContainer";
-    mainContainer.style.width = (body.clientWidth - 640) + "px";
-    let mainText = document.createElement("p");
-    mainText.id = "mainText";
-    mainContainer.appendChild(mainText);
-
-    container.appendChild(playerInfo);
-    container.appendChild(mainContainer);
-    container.appendChild(otherInfo);
-    body.appendChild(container);
+    $("<div>", {id: "otherInfo"}).appendTo("#mainContainer");
+    $("<div>", {id: "plotContainer"}).appendTo("#otherInfo");
+    $("<img>", {id: "plot"}).appendTo("#plotContainer");
+    $("<img>", {id: "playerIcon"}).appendTo("#plotContainer");
 
 
     // create the buttons for the game
     for (let i = 0; i < 6; i++) {
-        let button = document.createElement("button");
-        body.appendChild(button);
+        $("<button>").appendTo("body");
     }
 }
 

@@ -1,9 +1,9 @@
 String.prototype.format = function() {
-    let a = this;
+    let newString = this;
     for (let k in arguments) {
-        a = a.replace("{" + k + "}", arguments[k]);
+        newString = newString.split("{" + k + "}").join(arguments[k]);
     }
-    return a;
+    return newString;
 };
 
 // synchronous reading to make sure everything is initialized before moving on

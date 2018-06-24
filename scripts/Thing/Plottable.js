@@ -1,24 +1,24 @@
 "use strict";
 
-import {Thing} from "./Thing.js";
-import {placeList} from "./Place/Place.js";
+import Thing from "./Thing.js";
+import {placeList} from "../Data.js";
 
 /**
  * @classdesc A Thing that has a location on a map
  */
-export class Plottable extends Thing {
+export default class Plottable extends Thing {
 
     /**
-     * @param {String} name - the name of this
-     * @param {String} desc - the description of this
-     * @param {String} place - the name of the place this is in
-     * @param {int} xPos - the x Position of this
-     * @param {int} yPos - the y Position of this
+     * @param name {String} the name of this
+     * @param desc {String} the description of this
+     * @param parentPlaceName {String} the name of the place this is in
+     * @param xPos {int} the x Position of this
+     * @param yPos {int} the y Position of this
      */
-    constructor(name, desc, place, xPos, yPos) {
+    constructor(name, desc, parentPlaceName, xPos, yPos) {
         super(name, desc);
 
-        this.place = place;
+        this.parentPlace = placeList[parentPlaceName];
         this.xPos = xPos;
         this.yPos = yPos;
 
@@ -26,17 +26,14 @@ export class Plottable extends Thing {
     }
 
     addToParentPlace() {
-        if(this.place == null) return;
+        if(this.parentPlace == null) return;
 
-        console.log("Adding {0} to {1}".format(this.name, this.place));
+        console.log("Adding {0} to {1}".format(this.name, this.parentPlace.name));
 
-        let place = placeList[this.place];
-
-        place.addToPlot(this);
+        this.parentPlace.addToPlot(this);
     }
 
     getTile() {
-        let place = placeList[this.place];
-        return place.getTile(this.xPos, this.yPos);
+        return this.parentPlace.getTile(this.xPos, this.yPos);
     }
 }

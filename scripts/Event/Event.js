@@ -1,15 +1,20 @@
-export class Event {
-    constructor(title, mainText, buttonSet) {
+const PLOT_FILE = "assets/plot/images/{0}.png";
+
+export default class Event {
+    constructor(title, storyText, buttonSet, nextEvent, other) {
         this.title = title;
-        this.mainText = mainText;
+        this.storyText = storyText;
         this.buttonSet = buttonSet;
+
+        this.nextEvent = nextEvent;
+        this.other = other;
     }
 
     buttonPress(command, player) {
         let newEvent = this.chooseNewEvent(command, player);
 
         if(newEvent == null) {
-            console.log("Given a null event");
+            console.error("Given a null event to display");
             return;
         }
         Event.updateDisplay(newEvent, player);
@@ -17,37 +22,47 @@ export class Event {
 
     /**
      * @param event - A subclass of the base class Event
-     * @param {Mobile} player - The player of the game
+     * @param player {Mobile} The player of the game
      */
     static updateDisplay(event, player) {
 
         // update buttons
-        let currentButtonSet = document.getElementsByTagName("button");
-        for(let i = 0; i < event.buttonSet.length; i++) {
-            let clone = currentButtonSet[i].cloneNode();
-            clone.innerHTML = event.buttonSet[i];
-            clone.addEventListener("click",
-                function() { event.buttonPress(event.buttonSet[i], player) });
-            currentButtonSet[i].parentNode.replaceChild(clone, currentButtonSet[i]);
-        }
+        let $buttonSet = $("button");
+        $buttonSet.hide();
 
-        // update mainText
-        let mainText = document.getElementById("mainText");
-        mainText.textContent = event.mainText;
+        $buttonSet.each(function(index) {
+            if(index === event.buttonSet.length) {
+                return false;
+            }
+
+            let $this = $(this);
+            $this.text(event.buttonSet[index]);
+            $this.off("click");
+            $this.click(function() {
+                event.buttonPress(event.buttonSet[index], player);
+            });
+            $this.show();
+        });
+
+
+        // update storyText
+        $("#storyText").text(event.storyText);
 
 
         // update otherInfo
-        let newImage = document.getElementById("image");
-        newImage.src = "assets/plot/images/main.png";
-        newImage.style.top = (128 - player.yPos * 64) + "px";
-        newImage.style.left = (128 - player.xPos * 64) + "px";
+        let newImage = $("#plot");
+        newImage.attr("src", PLOT_FILE.format(player.parentPlace.name));
+        newImage.css({
+            top: (128 - player.yPos * 64),
+            left: (128 - player.xPos * 64)
+        });
     }
 
     /**
      * @param {String} command - the text of the button the user clicks
      * @param {Mobile} player - the player of the game
      *
-     * wrong warning message
+     * Abstract method to be implemented by child classes
      */
     chooseNewEvent(command, player) {
         throw new Error('You have to implement this abstract method');

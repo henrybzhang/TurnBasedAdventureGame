@@ -2,21 +2,31 @@
   "bear": {
     "name": "bear",
     "id": 2001,
-    "description": "A huge bear",
+    "desc": "A huge bear",
     "level": 1,
-    "baseStats": [10, 10, 5, 10],
+    "baseStats": {
+      "hp":       10,
+      "energy":    5,
+      "agility":   5,
+      "strength": 10
+    },
     "inventory": [
-      4001 
+      "Animal Fur"
     ]
   },
   "wolf": {
     "name": "wolf",
     "id": 2002,
-    "description": "A big grey wolf",
+    "desc": "A big grey wolf",
     "level": 1,
-    "baseStats": [5, 5, 10, 5],
+     "baseStats": {
+      "hp":        5,
+      "energy":   10,
+      "agility":  10,
+      "strength":  5
+    },
     "inventory": [
-      4001  
+      "Animal Fur" 
     ]
   }
 }

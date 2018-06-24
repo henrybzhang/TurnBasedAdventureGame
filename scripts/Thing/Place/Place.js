@@ -1,21 +1,20 @@
 "use strict";
 
-import {Plottable} from "../Plottable.js";
-import {Tile} from "./Tile.js";
-import {tileList} from "./Tile.js";
+import {tileList} from "../../Data.js";
+import {placeList} from "../../Data.js";
 import {readFile} from "../../Miscellaneous.js";
+import Plottable from "../Plottable.js";
+import Tile from "./Tile.js";
 
 // constants
 const PLACE_LIST_FILE = "assets/json/placeList.json";
 const PLOT_CSV_FILE = "assets/plot/csv/{0}_{1}.csv";
 const LAYER_NAMES = ["Bot", "Top"];
 
-export let placeList = {};
+export default class Place extends Plottable {
 
-export class Place extends Plottable {
-
-    constructor(name, desc, place, xPos, yPos, size, hasEntry) {
-        super(name, desc, place, xPos, yPos);
+    constructor(name, desc, placeName, xPos, yPos, size, hasEntry) {
+        super(name, desc, placeName, xPos, yPos);
 
         console.log("Creating {0}".format(this.name));
 
@@ -57,7 +56,8 @@ export class Place extends Plottable {
 
                     if(this.plot[y][x] == null) {
                         let tileToCopy = tileList[row[x]];
-                        this.plot[y][x] = new Tile(tileToCopy.name, tileToCopy.desc);
+                        this.plot[y][x] = new Tile(tileToCopy.name,
+                                        tileToCopy.desc, tileToCopy.dangerLevel);
                         continue;
                     }
                     this.plot[y][x].addTile(row[x]);
@@ -67,8 +67,16 @@ export class Place extends Plottable {
         console.log("Created plot for {0} with size {1}\n\n".format(this.name, this.size));
     }
 
+    /**
+     * Adds the plottable to its position in the plot
+     * @param {Plottable} plottable
+     */
     addToPlot(plottable) {
          this.plot[plottable.yPos][plottable.xPos].addPlottable(plottable);
+    }
+
+    getPlace(x, y) {
+        return this.plot[y][x].getPlace();
     }
 
     /**
@@ -90,10 +98,13 @@ export class Place extends Plottable {
         for(let placeName in placeObject) {
             let p = placeObject[placeName];
             placeList[placeName] =
-                new Place(placeName, p.desc, p.place,
+                new Place(placeName, p.desc, p.parentPlace,
                     p.xPos, p.yPos, p.size, p.hasEntry);
         }
 
         console.log(placeList);
     }
 }
+
+Place.createPlaces();
+

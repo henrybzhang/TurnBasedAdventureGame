@@ -1,13 +1,11 @@
 "use strict";
 
 import {tileList} from "../../Data.js";
-import {placeList} from "../../Data.js";
 import {readFile} from "../../Miscellaneous.js";
 import Plottable from "../Plottable.js";
 import Tile from "./Tile.js";
 
 // constants
-const PLACE_LIST_FILE = "assets/json/placeList.json";
 const PLOT_CSV_FILE = "assets/plot/csv/{0}_{1}.csv";
 const LAYER_NAMES = ["Bot", "Top"];
 
@@ -83,28 +81,23 @@ export default class Place extends Plottable {
      * @returns {Tile} The list of tiles at this coordinate in the place
      */
     getTile(xPos, yPos) {
+        console.log("List of Plottables on tile:");
         console.log(this.plot[yPos][xPos].onTileList);
         return this.plot[yPos][xPos];
     }
 
-    static createPlaces() {
-        console.log("Creating Places");
-
-        let placeObject = JSON.parse(readFile(PLACE_LIST_FILE));
-
-        // push main map onto list
-        placeList["main"] = new Place("main", "main", null, -1, -1, 32, false);
-
-        for(let placeName in placeObject) {
-            let p = placeObject[placeName];
-            placeList[placeName] =
-                new Place(placeName, p.desc, p.parentPlace,
-                    p.xPos, p.yPos, p.size, p.hasEntry);
+    /**
+     * @param tileType {String} Name of the tile to search for
+     * @returns {int[]} [xPos, yPos]
+     */
+    getTileCoordinates(tileType) {
+        for(let y = 0; y < this.size; y++) {
+            for(let x = 0; x < this.size; x++) {
+                if(this.plot[y][x].hasTile(tileType)) {
+                    return [x, y];
+                }
+            }
         }
-
-        console.log(placeList);
+        console.error();
     }
 }
-
-Place.createPlaces();
-

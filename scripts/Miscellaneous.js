@@ -16,3 +16,11 @@ export function readFile(filePath) {
 
     return xhr.responseText;
 }
+
+// without overwrite
+export function deepAssign(target, obj) {
+    for (const key of Object.getOwnPropertyNames(obj)) {
+        if(target[key] != null) continue;
+        target[key] = obj[key];
+    }
+}

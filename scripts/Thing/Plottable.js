@@ -1,7 +1,9 @@
 "use strict";
 
-import Thing from "./Thing.js";
 import {placeList} from "../Data.js";
+import Thing from "./Thing.js";
+import Template from "../EventTypes/Template.js";
+import Trade from "../EventTypes/Trade.js";
 
 /**
  * @classdesc A Thing that has a location on a map
@@ -23,6 +25,16 @@ export default class Plottable extends Thing {
         this.yPos = yPos;
 
         this.addToParentPlace();
+    }
+
+    interact() {
+        let eventObject = {};
+        eventObject["Go Back"] = this.getTile().getEvent();
+        eventObject["Trade"] = new Trade("Trade with " + this.name, this.desc,
+                                            this, null);
+
+        return new Template("Interaction with " + this.name, this.desc,
+            eventObject);
     }
 
     addToParentPlace() {

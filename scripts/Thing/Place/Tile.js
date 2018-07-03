@@ -1,22 +1,19 @@
-import {readFile} from "../../Miscellaneous.js";
-import {placeList} from "../../Data.js";
-import {monsterList} from "../../Data.js";
-import {tileList} from "../../Data.js";
-import Default from "../../Event/Default.js";
-import Fight from "../../Event/Fight.js";
+import {placeList, monsterList, tileList} from "../../Data.js";
+import Default from "../../EventTypes/Default.js";
+import Fight from "../../EventTypes/Fight.js";
+import Template from "../../EventTypes/Template.js"
+import Thing from "../Thing.js";
 
-const TILE_TEXT_FILE = "assets/json/tileText.json";
 
 const ENCOUNTER_CHANCE = [0, 20, 50];
 
-export default class Tile {
+export default class Tile extends Thing {
     constructor(name, desc, dangerLevel) {
-        this.name = name;
-        this.desc = desc;
+        super(name, desc);
         this.dangerLevel = dangerLevel;
-        this.myTiles = {
-            name : tileList[this.name]
-        };
+
+        this.myTiles = {};
+
         this.onTileList = {};
     }
 
@@ -36,6 +33,28 @@ export default class Tile {
         this.onTileList[plottable.name] = plottable;
     }
 
+    hasTile(tileName) {
+        return (tileName in this.myTiles);
+    }
+
+    interact() {
+        let keys = Object.keys(this.onTileList);
+
+        if(keys.length === 1) {
+            return this.onTileList[keys[0]].interact();
+        }
+
+        let eventObject = {};
+        let desc = "";
+        for(let key in keys) {
+            eventObject[key] = this.onTileList[key].interact();
+            desc += this.onTileList[key].desc = '\n';
+        }
+        eventObject["Go Back"] = new Default(this);
+
+        return new Template("Interaction on " + this.name, desc, eventObject);
+    }
+
     getPlace() {
         for(let plottableName in this.onTileList) {
             // if(plottable instanceof Place) {
@@ -51,32 +70,14 @@ export default class Tile {
     getEvent() {
         // get number between 0 and 99
         let random = Math.floor(Math.random() * 100);
-        console.log("Random: " + random);
-        console.log(this.dangerLevel);
 
         if(random < ENCOUNTER_CHANCE[this.dangerLevel]) {
-            let monster = monsterList.randomMonster();
+            let monster = monsterList.randomMonster().clone();
+            console.log("Fighting " + monster.name);
             return new Fight("Fight " + monster.name, monster.desc,
                 this.getEvent(), monster);
         }
 
         return new Default(this);
     }
-
-    static createTiles() {
-        console.log("Creating Tiles");
-
-        let tileObject = JSON.parse(readFile(TILE_TEXT_FILE));
-
-        for(let tileName in tileObject) {
-            let tile = tileObject[tileName];
-            tileList[tileName] = new Tile(tileName, tile.desc, tile.dangerLevel);
-        }
-
-        console.log(tileList);
-    }
 }
-
-Tile.createTiles();
-
-

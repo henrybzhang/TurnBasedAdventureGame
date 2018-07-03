@@ -3,40 +3,55 @@ p {
 }
 
 div {
-    height: 80vh;
 }
 
 #mainContainer {
     display: flex;
     flex-flow: row;
+    height: 80vh;
 }
 
 
 #storyContainer {
-    background-color: #D3C8B4;
+    background-color: #334350;
     flex-grow: 1;
 }
 
 #storyText {
-
+    font-size: 20px;
+    color: Beige;
 }
 
 
 /* playerInfo stuff */
-#playerInfo {
-    background-color: #586671;
+#playerContainer {
+    background-color: #053A70;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 320px;
+    color: Khaki;
+}
+
+#playerInfoText {
+    font-size: 25px;
+}
+
+
+/* otherInfo stuff */
+#otherContainer {
+    background-color: #A86E63;
     flex-grow: 0;
     flex-shrink: 0;
     flex-basis: 320px;
 }
 
-
-/* otherInfo stuff */
 #otherInfo {
-    background-color: #A86E63;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 320px;
+    position: relative;
+    top: 320px;
+}
+
+#otherInfoText {
+    font-size: 25px;
 }
 
 #plotContainer {
@@ -65,4 +80,8 @@ button {
     font-size: 16px;
     height: 9vh;
     width: 33.3%;
+}
+
+button:disabled {
+    background-color: #CCBEA3;
 }

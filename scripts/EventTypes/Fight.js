@@ -1,13 +1,14 @@
-import Event from "./Event.js";
-import Entity from "../Entity.js";
+"use strict";
+
+import Event, {me} from "../Event.js";
+import Mobile from "../Thing/Mobile.js";
 import Next from "./Next.js";
 
-const ERROR_NULL_ENEMY = "{0}'s enemy is null";
-
+const MISSING_ENERGY = "{0} does not have enough energy to do anything\n";
 const ATTACK_TEXT = "{0} attacks {1} for {2} damage.\n";
 const FIGHT_END_TEXT = "The fight between {0} and {1} has ended. {0} emerges victorious.\n";
 
-const BUTTON_SET = ["Attack", "Defend", "Inventory", "Run"];
+const FIGHT_BUTTON_SET = ["Attack", "Defend", "Inventory", "Run"];
 
 const DEFENSE_MODIFIER = 0.5;
 
@@ -20,97 +21,99 @@ export default class Fight extends Event {
      * @param opponent {Mobile}
      */
     constructor(name, desc, nextEvent, opponent) {
-        super(name, desc, BUTTON_SET, nextEvent, opponent);
+        super(name, desc, FIGHT_BUTTON_SET, nextEvent, opponent);
     }
 
-    chooseNewEvent(command, player) {
-        class Participant extends Entity {
+    chooseNewEvent(command) {
+        class Entity {
             /**
-             * @param {String} name
-             * @param {Entity} entity
+             * @param {Mobile} mobile
              * @param {String} command
              */
-            constructor(name, entity, command) {
-                super(entity.level, entity.baseStats, entity.inventory);
-                this.name = name;
+            constructor(mobile, command) {
+                this.name = mobile.name;
+                this.mobile = mobile;
                 this.command = command;
 
                 // faster is larger number
-                this.speed = entity.getAgility() * entity.getFatigue() *
+                this.speed = mobile.agility() * mobile.fatigue() *
                                 Fight.actionSpeed(command);
 
-                this.actionSuccess =
-                    entity.getEnergy() > entity.energyCost(command);
+                this.actionSuccess = mobile.energy() >= mobile.energyCost(command);
             }
         }
 
-        let participants = [new Participant(player.name, player.entity, command),
-                            new Participant(this.other.name, this.other.entity, command)];
-        participants.sort(function(a, b){ return a.speed - b.speed});
+        let entities = [new Entity(me, command),
+                            new Entity(this.other, command)];
+        entities.sort(function(a, b){ return b.speed - a.speed});
+        console.log(entities[0].speed > entities[1].speed);
 
         let storyText = "";
         let nextEvent = null;
 
-        for(let i = 0; i < participants.length; i++) {
-            let self = participants[i];
-            let enemy = participants[1 - i]; // only two participants total
+        for(let i = 0; i < entities.length; i++) {
+            let self = entities[i];
+            let enemy = entities[1 - i]; // only two entities total
+
             if(self.actionSuccess === false) {
+                storyText += MISSING_ENERGY.format(self.name);
                 console.log("{0} could not perform {1} due to lack of energy".format(
-                    participants.name, command
-                ))
+                    self.name, self.command
+                ));
+                continue;
             }
 
-            switch(command) {
+            switch(self.command) {
                 case "Attack":
-                    let damage = self.getStrength() *
-                        self.tempModifier * enemy.tempModifier;
+                    let damage = self.mobile.strength() / enemy.mobile.strength() *
+                        self.mobile.tempModifier * enemy.mobile.tempModifier;
 
                     if(damage === 0) damage = 1;
-                    enemy.loseHP(damage);
+                    enemy.mobile.loseHP(damage);
 
                     storyText += ATTACK_TEXT.format(self.name, enemy.name, damage);
 
                     // battle has ended
-                    if(enemy.getHP() === 0) {
+                    if(enemy.mobile.hp() === 0) {
 
                         storyText += "\n\n" + FIGHT_END_TEXT.format(self.name,
                             enemy.name);
 
                         // player lost the battle
-                        if(enemy.name === player.name) {
+                        if(enemy.name === me.name) {
                             // TODO: go to Losing Screen
                             console.log("You Lost");
                         }
 
                         nextEvent = new Next("Won battle vs. " + enemy.name,
-                            storyText, player.getTile().getEvent());
+                            storyText, me.getTile().getEvent());
                     }
                     break;
 
                 case "Defend":
-                    self.tempModifier *= DEFENSE_MODIFIER;
+                    self.mobile.tempModifier *= DEFENSE_MODIFIER;
                     break;
 
                 case "Run":
                     // TODO: Potential bug where player's name is the same as a npc's name
-                    if(self.name !== player.name) {
+                    if(self.name !== me.name) {
                         continue;
                     }
 
                     // randomly choose an adjacent square to run to
                     let random = Math.floor(Math.random() * 4);
                     switch(random) {
-                        case 0: player.move(0, -1);
-                        case 1: player.move(0, 1);
-                        case 2: player.move(1, 0);
-                        case 3: player.move(-1, 0);
+                        case 0: self.mobile.move(0, -1);
+                        case 1: self.mobile.move(0, 1);
+                        case 2: self.mobile.move(1, 0);
+                        case 3: self.mobile.move(-1, 0);
                     }
 
                     // next event depends on the square landed on
-                    nextEvent = player.getTile().getEvent();
+                    nextEvent = me.getTile().getEvent();
             }
 
-            self.loseEnergy(self.energyCost(command));
+            self.mobile.loseEnergy(self.mobile.energyCost(self.command));
 
             // Something happened, next person's action doesn't matter anymore
             if(nextEvent != null){
@@ -119,9 +122,9 @@ export default class Fight extends Event {
         }
 
         // reset modifiers after each round
-        for(let i = 0; i < participants.length; i++) {
-            let temp = participants[i];
-            temp.tempModifier = 1;
+        for(let i = 0; i < entities.length; i++) {
+            let temp = entities[i];
+            temp.mobile.tempModifier = 1;
         }
 
         if(nextEvent == null) {

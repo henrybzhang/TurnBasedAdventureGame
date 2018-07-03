@@ -2,22 +2,20 @@
   "Soldier Caravan": {
     "name": "Soldier Caravan",
     "id": 1,
-    "description": "A caravan of soldiers preparing for a journey.",
-    "locationName": "mainMap",
-    "near": "Westwend",
-    "xDelta": 0,
-    "yDelta": 1,
+    "desc": "A caravan of soldiers preparing for a journey.",
     "inventory": [],
     "money": [1, 1, 1],
     "level": 1,
-    "baseStats": [5, 5, 10, 5]
+    "baseStats": [5, 5, 10, 5],
+    "parentPlace": "main",
+    "squareName": "Westwend",
+    "xDelta": 0,
+    "yDelta": 1
   },
   "Westwend Trader": {
     "name": "Westwend Trader",
     "id": 2,
-    "description": "A trader in the village of Westwend.",
-    "locationName": "Westwend",
-    "on": "MARKET",
+    "desc": "A trader in the village of Westwend.",
     "inventory": [
       "4001",
       "4001",
@@ -25,6 +23,8 @@
     ],
     "money": [1, 1, 1],
     "level": 1,
-    "baseStats": [5, 5, 10, 5]
+    "baseStats": [5, 5, 10, 5],
+    "parentPlace": "Westwend",
+    "squareType": "MARKET"
   }
 }

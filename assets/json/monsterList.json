@@ -4,12 +4,7 @@
     "id": 2001,
     "desc": "A huge bear",
     "level": 1,
-    "baseStats": {
-      "hp":       10,
-      "energy":    5,
-      "agility":   5,
-      "strength": 10
-    },
+    "baseStats": [10, 5, 5, 10],
     "inventory": [
       "Animal Fur"
     ]
@@ -19,12 +14,7 @@
     "id": 2002,
     "desc": "A big grey wolf",
     "level": 1,
-     "baseStats": {
-      "hp":        5,
-      "energy":   10,
-      "agility":  10,
-      "strength":  5
-    },
+    "baseStats": [5, 10, 10, 5],
     "inventory": [
       "Animal Fur" 
     ]

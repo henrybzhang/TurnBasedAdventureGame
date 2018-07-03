@@ -11,17 +11,33 @@ const CONVERSION_RATE = {
     "copper":     1
 };
 
-const TOTAL_STAT_COUNT = 4;
+const STAT_NAMES = ["hp", "energy", "agility", "strength"];
+const TOTAL_STAT_COUNT = STAT_NAMES.length;
+
+const INFO = "Level: {0}\nHP: {1}\nEnergy: {2}\nAgility: {3}\nStrength: {4}";
 
 const BASE_MULTIPLIER = 10;
 
-export default class Entity {
+export default class Stats {
 
-    constructor(level, baseStats, inventory) {
+    /**
+     * @param level {int} Level of this
+     * @param baseStats {int[]} Array of stats
+     * @param inventory {String[]} List of itemNames
+     */
+    createStats(level, baseStats, inventory) {
 
         this.level = level;
-        this.baseStats = baseStats;
+
+        this.baseStats = {};
+        for(let i = 0; i < TOTAL_STAT_COUNT; i++) {
+            this.baseStats[STAT_NAMES[i]] = baseStats[i];
+        }
+
         this.inventory = inventory;
+        if(this.inventory == null) {
+            this.inventory = [];
+        }
 
         this.money = {
             "gold":     0,
@@ -34,14 +50,14 @@ export default class Entity {
     }
 
     loseHP(amount) {
-        this.currentStats.hp -= amount;
+        this.currentStats["hp"] -= amount;
         if(this.currentStats.hp < 0){
             this.currentStats.hp = 0;
         }
     }
 
     loseEnergy(amount) {
-        this.currentStats.energy -= amount;
+        this.currentStats.energy = this.currentStats.energy - amount;
         if(this.currentStats.energy < 0){
             this.currentStats.energy = 0;
             console.error(ERROR_NOT_ENOUGH_ENERGY);
@@ -54,8 +70,10 @@ export default class Entity {
                 return 1;
             case "Defend":
                 return 1;
-            case "Move":
+            case "Run":
                 return 3;
+            case "Move":
+                return 1;
             default:
                 console.error(ERROR_UNKNOWN_ACTION.format(action));
                 return 0;
@@ -69,7 +87,7 @@ export default class Entity {
     }
 
     loseMoney(amount) {
-        let remainder = Entity.totalMoney(this.money) - Entity.totalMoney(amount);
+        let remainder = Stats.totalMoney(this.money) - Stats.totalMoney(amount);
 
         for(let moneyType in CONVERSION_RATE) {
             this.money[moneyType] = remainder / CONVERSION_RATE[moneyType];
@@ -78,35 +96,48 @@ export default class Entity {
     }
 
     enoughMoney(amount) {
-        return Entity.totalMoney(this.money) >= Entity.totalMoney(amount);
+        return Stats.totalMoney(this.money) >= Stats.totalMoney(amount);
     }
 
-    static totalMoney(amount) {
+    totalMoney() {
         let total = 0;
-        for(let moneyType in amount) {
-            total += amount[moneyType] * CONVERSION_RATE[moneyType];
+        for(let moneyType in this.money) {
+            total += this.money[moneyType] * CONVERSION_RATE[moneyType];
         }
         return total;
     }
 
-    getFatigue() {
+    baseStatsArray() {
+        let statsArray = [];
+        for(let i = 0; i < TOTAL_STAT_COUNT; i++) {
+            statsArray.push(this.baseStats[STAT_NAMES[i]]);
+        }
+        return statsArray;
+    }
+
+    fatigue() {
         return this.currentStats.energy / this.baseStats.energy;
     }
 
-    getHP() {
-        return this.currentStats.hp;
+    hp() {
+        return this.currentStats["hp"];
     }
 
-    getEnergy() {
-        return this.currentStats.energy;
+    energy() {
+        return this.currentStats["energy"];
     }
 
-    getAgility() {
-        return this.currentStats.agility;
+    agility() {
+        return this.currentStats["agility"];
     }
 
-    getStrength() {
-        return this.currentStats.strength;
+    strength() {
+        return this.currentStats["strength"];
+    }
+
+    statInfo() {
+        return INFO.format(this.level, this.hp(), this.energy(), this.agility(),
+                            this.strength());
     }
 }
 

@@ -1,9 +1,8 @@
-import {monsterList} from "../Data.js";
-import {readFile} from "../Miscellaneous.js";
-import Entity from "../Entity.js";
-import Plottable from "./Plottable.js";
+"use strict";
 
-const MONSTER_LIST_FILE = "assets/json/monsterList.json";
+import {deepAssign} from "../Miscellaneous.js";
+import Stats from "../Stats.js";
+import Plottable from "./Plottable.js";
 
 const ERROR_OUT_OF_BOUNDS = "Invalid Move: Out of Bounds";
 const ERROR_LEAVE_PLACE = "Invalid Move: No specific direction when exiting {0}";
@@ -12,7 +11,7 @@ export default class Mobile extends Plottable {
     constructor(name, desc, parentPlace, xPos, yPos, level, baseStats, inventory) {
         super(name, desc, parentPlace, xPos, yPos);
 
-        this.entity = new Entity(level, baseStats, inventory);
+        this.createStats(level, baseStats, inventory);
     }
 
     // TODO: make movement update plot
@@ -68,24 +67,13 @@ export default class Mobile extends Plottable {
     }
 
     clone() {
+        console.log(this);
        return new Mobile(this.name, this.desc, this.parentPlace, this.xPos,
-           this.yPos, this.entity.level, this.entity.baseStats, this.entity.inventory);
+           this.yPos, this.level, this.baseStatsArray(), this.inventory);
     }
 
-
-    static createMonsters() {
-        console.log("Creating Monsters");
-
-        let monsterObject = JSON.parse(readFile(MONSTER_LIST_FILE));
-
-        for(let monsterName in monsterObject) {
-            let m = monsterObject[monsterName];
-            monsterList[monsterName] = new Mobile(monsterName, m.desc, null,
-                -1, -1, m.level, m.baseStats, m.inventory);
-        }
-
-        console.log(monsterList);
+    info() {
+        return this.name + "\n" + this.statInfo();
     }
 }
-
-Mobile.createMonsters();
+deepAssign(Mobile.prototype, Stats.prototype);

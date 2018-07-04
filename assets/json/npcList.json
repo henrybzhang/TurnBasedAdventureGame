@@ -1,7 +1,6 @@
 {
   "Soldier Caravan": {
     "name": "Soldier Caravan",
-    "id": 1,
     "desc": "A caravan of soldiers preparing for a journey.",
     "inventory": [],
     "money": [1, 1, 1],
@@ -14,12 +13,11 @@
   },
   "Westwend Trader": {
     "name": "Westwend Trader",
-    "id": 2,
     "desc": "A trader in the village of Westwend.",
     "inventory": [
-      "4001",
-      "4001",
-      "4001"
+      "Animal Fur",
+      "Animal Fur",
+      "Animal Fur"
     ],
     "money": [1, 1, 1],
     "level": 1,

@@ -1,7 +1,5 @@
 {
   "bear": {
-    "name": "bear",
-    "id": 2001,
     "desc": "A huge bear",
     "level": 1,
     "baseStats": [10, 5, 5, 10],
@@ -10,8 +8,6 @@
     ]
   },
   "wolf": {
-    "name": "wolf",
-    "id": 2002,
     "desc": "A big grey wolf",
     "level": 1,
     "baseStats": [5, 10, 10, 5],

@@ -11,6 +11,7 @@ export default class Default extends Event {
     constructor(tile) {
         super(tile.name, tile.desc, DEFAULT_BUTTON_SET);
         console.log(tile.name);
+        console.log('\n');
     }
 
     canDo(action) {

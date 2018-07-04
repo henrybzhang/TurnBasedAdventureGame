@@ -1,17 +1,13 @@
 "use strict";
 
-import {deepAssign} from "../Miscellaneous.js";
-import Stats from "../Stats.js";
 import Plottable from "./Plottable.js";
 
 const ERROR_OUT_OF_BOUNDS = "Invalid Move: Out of Bounds";
 const ERROR_LEAVE_PLACE = "Invalid Move: No specific direction when exiting {0}";
 
 export default class Mobile extends Plottable {
-    constructor(name, desc, parentPlace, xPos, yPos, level, baseStats, inventory) {
-        super(name, desc, parentPlace, xPos, yPos);
-
-        this.createStats(level, baseStats, inventory);
+    constructor(name, desc, parentPlaceName, xPos, yPos) {
+        super(name, desc, parentPlaceName, xPos, yPos);
     }
 
     // TODO: make movement update plot
@@ -65,15 +61,4 @@ export default class Mobile extends Plottable {
         else if (this.parentPlace.parentPlace != null)   return 0;
         else                                             return -1;
     }
-
-    clone() {
-        console.log(this);
-       return new Mobile(this.name, this.desc, this.parentPlace, this.xPos,
-           this.yPos, this.level, this.baseStatsArray(), this.inventory);
-    }
-
-    info() {
-        return this.name + "\n" + this.statInfo();
-    }
 }
-deepAssign(Mobile.prototype, Stats.prototype);

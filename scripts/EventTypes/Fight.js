@@ -1,7 +1,6 @@
 "use strict";
 
 import Event, {me} from "../Event.js";
-import Mobile from "../Thing/Mobile.js";
 import Next from "./Next.js";
 
 const MISSING_ENERGY = "{0} does not have enough energy to do anything\n";
@@ -18,35 +17,34 @@ export default class Fight extends Event {
      * @param name {String}
      * @param desc {String}
      * @param nextEvent {Event}
-     * @param opponent {Mobile}
+     * @param opponent {Entity}
      */
     constructor(name, desc, nextEvent, opponent) {
         super(name, desc, FIGHT_BUTTON_SET, nextEvent, opponent);
     }
 
     chooseNewEvent(command) {
-        class Entity {
+        class Fighter {
             /**
-             * @param {Mobile} mobile
+             * @param {Entity} entity
              * @param {String} command
              */
-            constructor(mobile, command) {
-                this.name = mobile.name;
-                this.mobile = mobile;
+            constructor(entity, command) {
+                this.name = entity.name;
+                this.entity = entity;
                 this.command = command;
 
                 // faster is larger number
-                this.speed = mobile.agility() * mobile.fatigue() *
+                this.speed = entity.agility() * entity.fatigue() *
                                 Fight.actionSpeed(command);
 
-                this.actionSuccess = mobile.energy() >= mobile.energyCost(command);
+                this.actionSuccess = entity.energy() >= entity.energyCost(command);
             }
         }
 
-        let entities = [new Entity(me, command),
-                            new Entity(this.other, command)];
+        let entities = [new Fighter(me, command),
+                            new Fighter(this.other, command)];
         entities.sort(function(a, b){ return b.speed - a.speed});
-        console.log(entities[0].speed > entities[1].speed);
 
         let storyText = "";
         let nextEvent = null;
@@ -65,16 +63,16 @@ export default class Fight extends Event {
 
             switch(self.command) {
                 case "Attack":
-                    let damage = self.mobile.strength() / enemy.mobile.strength() *
-                        self.mobile.tempModifier * enemy.mobile.tempModifier;
+                    let damage = self.entity.strength() / enemy.entity.strength() *
+                        self.entity.tempModifier * enemy.entity.tempModifier;
 
                     if(damage === 0) damage = 1;
-                    enemy.mobile.loseHP(damage);
+                    enemy.entity.loseHP(damage);
 
                     storyText += ATTACK_TEXT.format(self.name, enemy.name, damage);
 
                     // battle has ended
-                    if(enemy.mobile.hp() === 0) {
+                    if(enemy.entity.hp() === 0) {
 
                         storyText += "\n\n" + FIGHT_END_TEXT.format(self.name,
                             enemy.name);
@@ -85,13 +83,15 @@ export default class Fight extends Event {
                             console.log("You Lost");
                         }
 
+                        self.loot(enemy);
+
                         nextEvent = new Next("Won battle vs. " + enemy.name,
                             storyText, me.getTile().getEvent());
                     }
                     break;
 
                 case "Defend":
-                    self.mobile.tempModifier *= DEFENSE_MODIFIER;
+                    self.entity.tempModifier *= DEFENSE_MODIFIER;
                     break;
 
                 case "Run":
@@ -103,17 +103,25 @@ export default class Fight extends Event {
                     // randomly choose an adjacent square to run to
                     let random = Math.floor(Math.random() * 4);
                     switch(random) {
-                        case 0: self.mobile.move(0, -1);
-                        case 1: self.mobile.move(0, 1);
-                        case 2: self.mobile.move(1, 0);
-                        case 3: self.mobile.move(-1, 0);
+                        case 0:
+                            self.entity.move(0, -1);
+                            break;
+                        case 1:
+                            self.entity.move(0, 1);
+                            break;
+                        case 2:
+                            self.entity.move(1, 0);
+                            break;
+                        case 3:
+                            self.entity.move(-1, 0);
+                            break;
                     }
 
                     // next event depends on the square landed on
                     nextEvent = me.getTile().getEvent();
             }
 
-            self.mobile.loseEnergy(self.mobile.energyCost(self.command));
+            self.entity.loseEnergy(self.entity.energyCost(self.command));
 
             // Something happened, next person's action doesn't matter anymore
             if(nextEvent != null){
@@ -124,7 +132,7 @@ export default class Fight extends Event {
         // reset modifiers after each round
         for(let i = 0; i < entities.length; i++) {
             let temp = entities[i];
-            temp.mobile.tempModifier = 1;
+            temp.entity.tempModifier = 1;
         }
 
         if(nextEvent == null) {

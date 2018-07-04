@@ -6,7 +6,7 @@ import Tool from './Thing/ItemTypes/Tool.js';
 import Clothing from './Thing/ItemTypes/Clothing.js';
 import Consumable from './Thing/ItemTypes/Consumable.js';
 
-import Mobile from './Thing/Mobile.js';
+import Entity from './Thing/Entity.js';
 import Tile from './Thing/Place/Tile.js';
 import Place from './Thing/Place/Place.js';
 
@@ -94,7 +94,7 @@ function createMonsters() {
 
     for(let monsterName in monsterObject) {
         let m = monsterObject[monsterName];
-        Data.monsterList[monsterName] = new Mobile(monsterName, m.desc, null,
+        Data.monsterList[monsterName] = new Entity(monsterName, m.desc, null,
             -1, -1, m.level, m.baseStats, m.inventory);
     }
 
@@ -123,7 +123,7 @@ function createNPCs() {
         } else {
             console.error(ERROR_NO_LOCATION_GIVEN.format(npcName));
         }
-        Data.npcList[npcName] = new Mobile(npcName, npc.desc, npc.parentPlace,
+        Data.npcList[npcName] = new Entity(npcName, npc.desc, npc.parentPlace,
             xPos, yPos, npc.level, npc.baseStats, npc.inventory);
     }
 

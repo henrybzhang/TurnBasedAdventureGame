@@ -11,8 +11,8 @@ import Trade from "../EventTypes/Trade.js";
 export default class Plottable extends Thing {
 
     /**
-     * @param name {String} the name of this
-     * @param desc {String} the description of this
+     * @param name
+     * @param desc
      * @param parentPlaceName {String} the name of the place this is in
      * @param xPos {int} the x Position of this
      * @param yPos {int} the y Position of this
@@ -31,10 +31,9 @@ export default class Plottable extends Thing {
         let eventObject = {};
         eventObject["Go Back"] = this.getTile().getEvent();
         eventObject["Trade"] = new Trade("Trade with " + this.name, this.desc,
-                                            this, null);
-
-        return new Template("Interaction with " + this.name, this.desc,
-            eventObject);
+                                            this, this.getTile().getEvent(););
+        return new Template("Interaction with " + this.name,
+                                this.desc, eventObject);
     }
 
     addToParentPlace() {

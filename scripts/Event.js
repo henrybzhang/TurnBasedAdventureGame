@@ -14,12 +14,13 @@ export default class Event {
 
     buttonPress(command) {
         let newEvent = this.chooseNewEvent(command);
+        console.log(me.inventory);
 
         if(newEvent == null) {
             console.error("Given a null event to display");
             newEvent = me.getTile().getEvent();
         }
-        newEvent.updateDisplay(me);
+        newEvent.updateDisplay();
     }
 
     updateDisplay() {

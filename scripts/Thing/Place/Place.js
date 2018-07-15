@@ -11,8 +11,8 @@ const LAYER_NAMES = ["Bot", "Top"];
 
 export default class Place extends Plottable {
 
-    constructor(name, desc, placeName, xPos, yPos, size, hasEntry) {
-        super(name, desc, placeName, xPos, yPos);
+    constructor(name, desc, parentPlace, xPos, yPos, size, hasEntry) {
+        super(name, desc, parentPlace, xPos, yPos);
 
         console.log("Creating {0}".format(this.name));
 

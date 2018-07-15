@@ -1,8 +1,8 @@
 import Event from '../Event.js';
 
 export default class Template extends Event {
-    constructor(title, desc, eventObject) {
-        super(title, desc, Object.keys(eventObject));
+    constructor(title, storyText, eventObject) {
+        super(title, storyText, Object.keys(eventObject), undefined, undefined);
         this.eventObject = eventObject;
     }
 

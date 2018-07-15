@@ -1,7 +1,6 @@
 "use strict";
 
-import Entity from "./Thing/Entity.js";
-import Event, {me} from "./Event.js";
+import {me} from './Data.js';
 import './Initialize.js';
 
 function start() {
@@ -13,8 +12,6 @@ function start() {
 }
 
 function initialize() {
-    let startStats = [10, 10, 10, 10];
-    Event.createMe(new Entity("ME", "myDesc", "main", 0, 0, 1, startStats, []));
 }
 
 function createDisplay() {

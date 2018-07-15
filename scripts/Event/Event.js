@@ -1,8 +1,16 @@
+import {me} from '../Data.js';
+
 const PLOT_FILE = "assets/plot/images/{0}.png";
 
-export let me;
-
 export default class Event {
+
+    /**
+     * @param title {String} The title of this
+     * @param storyText {String} The text of this to show
+     * @param buttonSet {String[]} The texts of the buttons to be used
+     * @param nextEvent {Event] The next event to use
+     * @param other {Plottable} Other plottables involved with this event
+     */
     constructor(title, storyText, buttonSet, nextEvent, other) {
         this.title = title;
         this.storyText = storyText;
@@ -13,11 +21,15 @@ export default class Event {
     }
 
     buttonPress(command) {
+        this.sideEffects();
+
         let newEvent = this.chooseNewEvent(command);
         console.log(me.inventory);
 
         if(newEvent == null) {
-            console.error("Given a null event to display");
+            if(newEvent === undefined) {
+                console.error("Given a undefined event to display");
+            }
             newEvent = me.getTile().getEvent();
         }
         newEvent.updateDisplay();
@@ -76,20 +88,20 @@ export default class Event {
     /**
      * @param {String} command - the text of the button the user clicks
      *
-     * Abstract method to be implemented by child classes
+     * @abstract
      */
     chooseNewEvent(command) {
-        throw new Error('You have to implement this abstract method');
+        console.error('You have to implement this abstract chooseNewEvent method');
+    }
+
+    /**
+     * Performs side effects when this event is triggered
+     */
+    sideEffects() {
+        console.log("No side effects");
     }
 
     canDo() {
         return true;
-    }
-
-    static createMe(player) {
-        console.log("Creating me");
-        me = player;
-        console.log(me);
-        console.log("\n");
     }
 }

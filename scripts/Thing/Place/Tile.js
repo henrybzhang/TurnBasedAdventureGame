@@ -1,7 +1,7 @@
 import {placeList, monsterList, tileList} from "../../Data.js";
-import Default from "../../EventTypes/Default.js";
-import Fight from "../../EventTypes/Fight.js";
-import Template from "../../EventTypes/Template.js"
+import Default from "../../Event/EventTypes/Default.js";
+import Fight from "../../Event/EventTypes/Fight.js";
+import Template from "../../Event/EventTypes/Template.js"
 import Thing from "../Thing.js";
 
 

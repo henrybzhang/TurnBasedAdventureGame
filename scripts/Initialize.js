@@ -9,12 +9,14 @@ import Consumable from './Thing/ItemTypes/Consumable.js';
 import Entity from './Thing/Entity.js';
 import Tile from './Thing/Place/Tile.js';
 import Place from './Thing/Place/Place.js';
+import Quest from './Thing/Quest.js';
 
 const TILE_TEXT_FILE = "assets/json/tileText.json";
 const PLACE_LIST_FILE = "assets/json/placeList.json";
 const ITEM_LIST_FILE = "assets/json/itemList.json";
 const MONSTER_LIST_FILE = "assets/json/monsterList.json";
 const NPC_LIST_FILE = "assets/json/npcList.json";
+const QUEST_LIST_FILE = "assets/json/questList.json";
 
 const ERROR_NO_LOCATION_GIVEN = "No location given to place npc: {0}";
 
@@ -29,6 +31,8 @@ function createTiles() {
 
         Data.tileList[tileName].myTiles[name] = Data.tileList[tileName];
     }
+
+    Object.assign(Data.totalList, Data.tileList);
 
     console.log(Data.tileList);
     console.log('\n');
@@ -45,9 +49,11 @@ function createPlaces() {
     for(let placeName in placeObject) {
         let p = placeObject[placeName];
         Data.placeList[placeName] =
-            new Place(placeName, p.desc, p.parentPlace,
+            new Place(placeName, p.desc, Data.placeList[p.parentPlace],
                 p.xPos, p.yPos, p.size, p.hasEntry);
     }
+
+    Object.assign(Data.totalList, Data.placeList);
 
     console.log(Data.placeList);
     console.log('\n');
@@ -83,6 +89,8 @@ function createItems() {
         }
     }
 
+    Object.assign(Data.totalList, Data.itemList);
+
     console.log(Data.itemList);
     console.log('\n');
 }
@@ -98,12 +106,17 @@ function createMonsters() {
             -1, -1, m.level, m.baseStats, m.inventory);
     }
 
+    Object.assign(Data.totalList, Data.monsterList);
+
     console.log(Data.monsterList);
     console.log('\n');
 }
 
 function createNPCs() {
     console.log("Creating NPCs");
+
+    let startStats = [10, 10, 10, 10];
+    Data.npcList["ME"] = Data.createMe(new Entity("ME", "myDesc", Data.placeList["main"], 0, 0, 1, startStats, []));
 
     let npcObject = JSON.parse(readFile(NPC_LIST_FILE));
 
@@ -123,19 +136,30 @@ function createNPCs() {
         } else {
             console.error(ERROR_NO_LOCATION_GIVEN.format(npcName));
         }
-        Data.npcList[npcName] = new Entity(npcName, npc.desc, npc.parentPlace,
-            xPos, yPos, npc.level, npc.baseStats, npc.inventory);
+        Data.npcList[npcName] = new Entity(npcName, npc.desc,
+            Data.placeList[npc.parentPlace], xPos, yPos, npc.level,
+            npc.baseStats, npc.inventory);
     }
+
+    Object.assign(Data.totalList, Data.npcList);
 
     console.log(Data.npcList);
     console.log('\n');
 }
 
-function combine() {
-    Object.assign(Data.totalList, Data.placeList, Data.tileList,
-        Data.itemList, Data.monsterList, Data.npcList);
-    console.log("List of everything");
-    console.log(Data.totalList);
+function createQuests() {
+    console.log("Creating Quests");
+
+    let questObject = JSON.parse(readFile(QUEST_LIST_FILE));
+
+    for(let questName in questObject) {
+        let q = questObject[questName];
+        Data.questList[questName] = new Quest(questName, q.desc, q.story, q.start);
+    }
+
+    Object.assign(Data.totalList, Data.questList);
+
+    console.log(Data.questList);
     console.log('\n');
 }
 
@@ -144,6 +168,10 @@ createPlaces();
 createItems();
 createMonsters();
 createNPCs();
+createQuests();
 
-combine();
+console.log("List of everything");
+console.log(Data.totalList);
+console.log('\n');
+
 

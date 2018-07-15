@@ -1,4 +1,5 @@
-import Event, {me} from '../Event.js';
+import Event from '../Event.js';
+import {me} from '../../Data.js';
 
 const DEFAULT_BUTTON_SET = ["Interact", "North", "Inventory", "West", "South", "East"];
 
@@ -20,7 +21,7 @@ export default class Default extends Event {
 
     chooseNewEvent(command) {
         let move = false;
-        let nextEvent = null;
+        let nextEvent;
         switch(command) {
             case "Interact":
                 nextEvent = me.getTile().interact();
@@ -50,7 +51,7 @@ export default class Default extends Event {
             me.loseEnergy(me.energyCost("Move"));
         }
 
-        if(nextEvent != null) {
+        if(nextEvent !== undefined) {
             return nextEvent;
         }
         return me.getTile().getEvent();

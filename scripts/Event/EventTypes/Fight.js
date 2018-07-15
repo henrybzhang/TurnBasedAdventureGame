@@ -1,6 +1,7 @@
 "use strict";
 
-import Event, {me} from "../Event.js";
+import Event from "../Event.js";
+import {me} from "../../Data.js";
 import Next from "./Next.js";
 
 const MISSING_ENERGY = "{0} does not have enough energy to do anything\n";
@@ -15,12 +16,12 @@ export default class Fight extends Event {
     /**
      *
      * @param name {String}
-     * @param desc {String}
+     * @param storyText {String}
      * @param nextEvent {Event}
      * @param opponent {Entity}
      */
-    constructor(name, desc, nextEvent, opponent) {
-        super(name, desc, FIGHT_BUTTON_SET, nextEvent, opponent);
+    constructor(name, storyText, nextEvent, opponent) {
+        super(name, storyText, FIGHT_BUTTON_SET, nextEvent, opponent);
     }
 
     chooseNewEvent(command) {
@@ -47,7 +48,7 @@ export default class Fight extends Event {
         entities.sort(function(a, b){ return b.speed - a.speed});
 
         let storyText = "";
-        let nextEvent = null;
+        let nextEvent;
 
         for(let i = 0; i < entities.length; i++) {
             let self = entities[i];
@@ -95,7 +96,7 @@ export default class Fight extends Event {
                     break;
 
                 case "Run":
-                    // TODO: Potential bug where player's name is the same as a npc's name
+                    // TODO: Potential bug where player's name is the same as a NPC's name
                     if(self.name !== me.name) {
                         continue;
                     }
@@ -124,7 +125,7 @@ export default class Fight extends Event {
             self.entity.loseEnergy(self.entity.energyCost(self.command));
 
             // Something happened, next person's action doesn't matter anymore
-            if(nextEvent != null){
+            if(nextEvent !== undefined){
                 break;
             }
         }
@@ -135,7 +136,7 @@ export default class Fight extends Event {
             temp.entity.tempModifier = 1;
         }
 
-        if(nextEvent == null) {
+        if(nextEvent === undefined) {
             nextEvent = new Next("Battle Scene", storyText, this);
         }
 

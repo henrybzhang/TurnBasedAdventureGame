@@ -1,5 +1,5 @@
-import {itemList} from '../Data.js';
-import Event, {me} from '../Event.js';
+import {itemList, me} from '../../Data.js';
+import Event from '../Event.js';
 import Next from './Next.js';
 import Inventory from "./Inventory.js";
 
@@ -9,8 +9,8 @@ const TRADE_SUCCESS_TEXT = "{0} was successfully {1}.";
 const TRADE_FAIL_TEXT = "{0} could not be {1} due to a deficit of {2}'s money.";
 
 export default class Trade extends Event {
-    constructor(title, desc, npc, nextEvent) {
-        super(title, desc, TRADE_BUTTON_SET, nextEvent, npc);
+    constructor(title, storyText, npc, nextEvent) {
+        super(title, storyText, TRADE_BUTTON_SET, nextEvent, npc);
 
         this.toBuy = false;
     }

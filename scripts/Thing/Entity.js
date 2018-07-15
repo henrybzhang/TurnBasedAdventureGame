@@ -19,15 +19,15 @@ export default class Entity extends Mobile {
     /**
      * @param name
      * @param desc
-     * @param parentPlaceName
+     * @param parentPlace
      * @param xPos
      * @param yPos
      * @param level {int} Level of this
      * @param baseStats {int[]} Array of stats
      * @param inventory {String[]} List of itemNames
      */
-    constructor(name, desc, parentPlaceName, xPos, yPos, level, baseStats, inventory) {
-        super(name, desc, parentPlaceName, xPos, yPos);
+    constructor(name, desc, parentPlace, xPos, yPos, level, baseStats, inventory) {
+        super(name, desc, parentPlace, xPos, yPos);
 
         this.level = level;
 

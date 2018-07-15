@@ -14,4 +14,15 @@ export let monsterList = {
 };
 export let npcList = {};
 
+export let questList = {};
+
 export let totalList = {};
+
+export let me;
+export function createMe(player) {
+    console.log("Creating me");
+    me = player;
+    console.log(me);
+    console.log("\n");
+    return me;
+}

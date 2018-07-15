@@ -6,8 +6,8 @@ const ERROR_OUT_OF_BOUNDS = "Invalid Move: Out of Bounds";
 const ERROR_LEAVE_PLACE = "Invalid Move: No specific direction when exiting {0}";
 
 export default class Mobile extends Plottable {
-    constructor(name, desc, parentPlaceName, xPos, yPos) {
-        super(name, desc, parentPlaceName, xPos, yPos);
+    constructor(name, desc, parentPlace, xPos, yPos) {
+        super(name, desc, parentPlace, xPos, yPos);
     }
 
     // TODO: make movement update plot

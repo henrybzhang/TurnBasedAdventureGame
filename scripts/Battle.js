@@ -6,6 +6,9 @@ const FIGHT_END_TEXT = "\n\nThe fight between {0} and {1} has ended. {0} emerges
 
 const DEFEND_MODIFIER = 0.5;
 
+// Attack, Defend, Run
+const NUMBER_OF_ACTIONS = 3;
+
 /**
  * Can either be battle or turn by turn fight scene
  */
@@ -20,11 +23,11 @@ export default class Battle {
         this.battleOver = false;
 
         this.fighters = [];
-        if(includesPlayer === true) {
-            this.fighters.push(new Fighter(me, command));
-        }
-        for(let fighter of entityList) {
-            this.fighters.push(new Fighter(fighter, this.chooseAction(fighter)));
+        for(let entity of entityList) {
+            let fighter = new Fighter(entity, this.chooseAction(entity));
+            if(entity === me) fighter = new Fighter(entity, command);
+
+            this.fighters.push(fighter);
         }
 
         this.fighters.sort(function(a, b){ return b.speed - a.speed});
@@ -41,7 +44,12 @@ export default class Battle {
      * @returns {string}
      */
     chooseAction(entity) {
-        return "Attack";
+        let randomAction = Math.floor(Math.random() * 3);
+        switch(randomAction) {
+            case 0: return "Attack";
+            case 1: return "Defend";
+            case 2: return "Run";
+        }
     }
 
     /**
@@ -65,8 +73,8 @@ export default class Battle {
 
             switch(self.command) {
                 case "Attack":
-                    let damage = self.entity.strength() / enemy.entity.strength() *
-                        self.entity.tempModifier * enemy.entity.tempModifier;
+                    let damage = Math.floor(self.entity.strength() / enemy.entity.strength() *
+                        self.entity.tempModifier * enemy.entity.tempModifier);
 
                     if(damage === 0) damage = 1;
                     enemy.entity.loseHP(damage);
@@ -137,13 +145,13 @@ export default class Battle {
      */
     battle() {
         while(this.battleOver === false) {
-            this.turn();
-
             // randomly choose an action for each fighter each time
             for(let fighter of this.fighters) {
                 fighter.setCommand(this.chooseAction(fighter.entity));
             }
             this.fighters.sort(function(a, b){ return b.speed - a.speed});
+
+            console.log(this.turn());
         }
     }
 

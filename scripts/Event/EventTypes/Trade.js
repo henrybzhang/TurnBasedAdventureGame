@@ -2,6 +2,7 @@ import {itemList, me} from '../../Data.js';
 import Event from '../Event.js';
 import Next from './Next.js';
 import Inventory from "./Inventory.js";
+import {findObj} from "../../Miscellaneous.js";
 
 const TRADE_BUTTON_SET = ["Buy", "Sell", "Go Back"];
 
@@ -36,6 +37,7 @@ export default class Trade extends Event {
     }
 
     trade(itemName) {
+        let item = findObj(itemName, itemList);
         let seller = me;
         let buyer = this.other;
         let tradeType = "sold";
@@ -46,13 +48,13 @@ export default class Trade extends Event {
             tradeType = "bought";
         }
 
-        let itemValue = itemList[itemName].getValue();
+        let itemValue = item.getValue();
 
         let mainText = TRADE_FAIL_TEXT.format(itemName, tradeType, buyer.name);
         if(buyer.loseMoney(itemValue)) {
             seller.gainMoney(itemValue);
-            seller.loseItem(itemName);
-            buyer.addItem(itemName);
+            seller.loseItem(item.id);
+            buyer.addItem(item.id);
             mainText = TRADE_SUCCESS_TEXT.format(itemName, tradeType);
         }
 

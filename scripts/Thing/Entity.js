@@ -1,4 +1,5 @@
 import {itemList} from '../Data.js';
+import {findObj} from "../Miscellaneous.js";
 import Item, {MONEY_TYPE_LIST, CONVERSION_RATE, MONEY_TYPES} from "./Item.js";
 import Mobile from './Mobile.js';
 
@@ -26,7 +27,7 @@ export default class Entity extends Mobile {
      * @param yPos
      * @param level {int} Level of this
      * @param baseStats {int[]} Array of stats
-     * @param inventory {Object} List of itemNames
+     * @param inventory {Object} Keys are id numbers, values are quantity of item
      */
     constructor(name, desc, parentPlace, xPos, yPos, level, baseStats, inventory) {
         super(name, desc, parentPlace, xPos, yPos);
@@ -36,15 +37,8 @@ export default class Entity extends Mobile {
         this.baseStats = baseStats;
 
         this.inventory = {};
-        for(let itemName in inventory) {
-
-            // check if item actually exists
-            let item = itemList[itemName];
-            if(item === undefined) {
-                console.error("{0} not found in itemList".format(itemName));
-            }
-
-            this.inventory[itemName] = inventory[itemName];
+        for(let itemID in inventory) {
+            this.inventory[itemID] = inventory[itemID];
         }
         this.money = [0, 0, 0];
 
@@ -56,43 +50,53 @@ export default class Entity extends Mobile {
         }
     }
 
-    loseItem(itemName) {
-        if(!this.inventory.hasOwnProperty(itemName)) {
-            console.error("{0} does not have a {1}".format(this.name, itemName));
+    loseItem(itemID) {
+        if(!this.inventory.hasOwnProperty(itemID)) {
+            console.error("{0} does not have a {1}".format(this.name, itemID));
             return;
         }
 
-        this.inventory[itemName]--;
-        if(this.inventory[itemName] === 0) {
-            delete this.inventory[itemName];
+        this.inventory[itemID]--;
+        if(this.inventory[itemID] === 0) {
+            delete this.inventory[itemID];
         }
     }
 
-    addItem(itemName) {
-        if(!this.inventory.hasOwnProperty(itemName)) {
-            this.inventory[itemName] = 0;
+    addItem(itemID) {
+        if(!this.inventory.hasOwnProperty(itemID)) {
+            this.inventory[itemID] = 0;
         }
-        this.inventory[itemName]++;
+        this.inventory[itemID]++;
     }
 
     /**
      * Adds multiple items at a time
-     * @param itemNames {String[]} Array of strings containing item names
+     * @param itemID {String} ID of the item being added
+     * @param quantity {int} Quantity of item to add
      */
-    addItems(itemNames) {
-        for(let itemName in itemNames) {
-            this.addItem(itemName);
+    addItems(itemID, quantity) {
+        for(let i = 0; i < quantity; i++) {
+            this.addItem(itemID);
         }
     }
 
     loot(entity) {
-        for(let itemName in entity.inventory) {
-            if(!this.inventory.hasOwnProperty(itemName)) {
-                this.inventory[itemName] = 0;
+        for(let itemID in entity.inventory) {
+            if(!this.inventory.hasOwnProperty(itemID)) {
+                this.inventory[itemID] = 0;
             }
-            this.inventory[itemName] += entity.inventory[itemName];
-            delete entity.inventory[itemName];
+            this.inventory[itemID] += entity.inventory[itemID];
+            delete entity.inventory[itemID];
         }
+    }
+
+    getInventoryItemNames() {
+        let items = [];
+        for(let itemID in this.inventory) {
+            items.push(itemList[itemID].name);
+        }
+        console.log(items);
+        return items;
     }
 
     gainMoney(amount) {

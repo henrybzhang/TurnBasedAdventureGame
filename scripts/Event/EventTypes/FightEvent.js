@@ -14,7 +14,7 @@ export default class FightEvent extends Event {
      *
      * @param name {String}
      * @param storyText {String}
-     * @param nextEvent {Event}
+     * @param nextEvent {Event} not used
      * @param opponent {Entity}
      */
     constructor(name, storyText, nextEvent, opponent) {
@@ -33,7 +33,7 @@ export default class FightEvent extends Event {
                 this.timeTaken = FIGHT_TURN_TIME;
         }
 
-        let participants = [this.other];
+        let participants = [this.other, me];
         let battle = new Battle(participants, true, command);
         let storyText = battle.turn();
 

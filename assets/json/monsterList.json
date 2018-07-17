@@ -4,25 +4,27 @@
     "level": 1,
     "baseStats": [
       10,
+      30,
       5,
-      5,
-      10
+      15
     ],
     "inventory": {
       "Animal Fur": 1
-    }
+    },
+    "dangerLevel": 1
   },
   "wolf": {
     "desc": "A big grey wolf",
     "level": 1,
     "baseStats": [
       5,
-      10,
+      30,
       10,
       5
     ],
     "inventory": {
       "Animal Fur": 1
-    }
+    },
+    "dangerLevel": 1
   }
 }

@@ -16,10 +16,6 @@ Gameplay:
     Add Rest option
     Add player info option
 
-Randomness:
-    Improve monster generation, make them randomly generate and move around
-    rather than random chance for each step
-
-Time:
-    Implement a time system in the game ex: quests
-
+Random:
+    Make monsters fight each other if on same square
+    Let monsters loot each other and level up from fighting

@@ -4,7 +4,7 @@ export let tileList = {};
 export let itemList = {};
 
 export let monsterList = {};
-export let activeMonsters = [];
+export let activeMonsters = {};
 
 export let npcList = {};
 

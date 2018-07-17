@@ -25,9 +25,28 @@ export function deepAssign(target, obj) {
     }
 }
 
-export function chooseRandom(list) {
-    let keys = Object.keys(list);
+/**
+ *
+ * @param name {String} The name of the object to be found
+ * @param obj {Object} Holds many keys ex: placeList, tileList, npcList
+ * @returns {*} The object
+ */
+export function findObj(name, obj) {
+    for(let id in obj) {
+        if(obj[id].name === name) {
+            return obj[id];
+        }
+    }
+    console.log('------------------------------------------------------------');
+    console.error("Could not find " + name + " in:");
+    console.log(obj);
+    console.log('------------------------------------------------------------');
+    return null;
+}
+
+export function chooseRandom(obj) {
+    let keys = Object.keys(obj);
     let index = Math.floor(Math.random() * keys.length);
 
-    return list[keys[index]];
+    return obj[keys[index]];
 }

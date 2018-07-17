@@ -2,11 +2,12 @@
 
 import './Initialize.js';
 import {questList} from "./Data.js";
+import {findObj} from "./Miscellaneous.js";
 
 function start() {
     createDisplay();
 
-    let event = questList["Opening Scene"].nextChapter.rootEvent;
+    let event = findObj("Opening Scene", questList).nextChapter.rootEvent;
     event.updateDisplay();
 }
 

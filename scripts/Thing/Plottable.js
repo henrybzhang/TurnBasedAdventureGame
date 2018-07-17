@@ -33,8 +33,8 @@ export default class Plottable extends Thing {
         eventObject["Go Back"] = this.getTile().getEvent();
         eventObject["Trade"] = new Trade("Trade with " + this.name, this.desc,
                                             this, this.getTile().getEvent());
-        for(let questName in this.quests) {
-            let quest = this.quests[questName];
+        for(let questID in this.quests) {
+            let quest = this.quests[questID];
             if(quest.nextChapter.triggerEvent === "Talk") {
                 eventObject[quest.nextChapter.name] = quest.nextChapter.rootEvent;
             }
@@ -66,7 +66,8 @@ export default class Plottable extends Thing {
             return;
         }
 
-        console.log("Adding {0} to {1}".format(this.name, this.parentPlace.name));
+        console.log("Adding {0} to {1} at ({2}, {3})".format(this.name,
+            this.parentPlace.name, this.xPos, this.yPos));
 
         this.parentPlace.addToPlot(this);
     }

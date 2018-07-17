@@ -1,7 +1,9 @@
-import {placeList, tileList} from "../../Data.js";
+import {placeList, totalList, me} from "../../Data.js";
 import Default from "../../Event/EventTypes/Default.js";
 import Template from "../../Event/EventTypes/Template.js"
 import Thing from "../../Thing.js";
+import Entity from "../Entity.js";
+import FightEvent from "../../Event/EventTypes/FightEvent.js";
 
 const PLOTTABLE_REMOVE_ERROR = "Trying to remove {0}#{1} when it isn't on the " +
     "tile in the first place";
@@ -15,15 +17,14 @@ export default class Tile extends Thing {
         this.onTileList = {};
 
         this.myTiles = {};
-        this.myTiles[name] = this;
+        this.myTiles[this.id] = this;
     }
 
     /**
      * Gets called after this already has a tile
-     * @param tileName {String} the name of the tile to add to this
+     * @param tile {Tile} The tile to add to this
      */
-    addTile(tileName) {
-        let tile = tileList[tileName];
+    addTile(tile) {
         this.name += "\\" + tile.name;
         this.desc += "\n\n" + tile.desc;
 
@@ -31,7 +32,7 @@ export default class Tile extends Thing {
             this.dangerLevel = tile.dangerLevel;
         }
 
-        this.myTiles[tileName] = tile;
+        this.myTiles[tile.id] = tile;
     }
 
     addPlottable(plottable) {
@@ -46,22 +47,28 @@ export default class Tile extends Thing {
         delete this.onTileList[plottable.id];
     }
 
-    hasTile(tileName) {
-        return (tileName in this.myTiles);
+    hasTile(tileID) {
+        return (tileID in this.myTiles);
+    }
+
+    getEnemy(selfID) {
+        for(let plottableID in this.onTileList) {
+            if(selfID !== plottableID &&
+                this.onTileList[plottableID] instanceof Entity) {
+                return this.onTileList[plottableID];
+            }
+        }
+        return null;
     }
 
     interact() {
         // keys are id numbers
         let keys = Object.keys(this.onTileList);
 
-        if(keys.length === 1) {
-            return this.onTileList[keys[0]].interact();
-        }
-
         let eventObject = {};
         let desc = "";
-        for(let key in keys) {
-            eventObject[key] = this.onTileList[key].interact();
+        for(let key of keys) {
+            eventObject[totalList[key].name] = this.onTileList[key].interact();
             desc += this.onTileList[key].desc = '\n';
         }
         eventObject["Go Back"] = new Default(this);
@@ -70,24 +77,19 @@ export default class Tile extends Thing {
     }
 
     getPlace() {
-        for(let plottableName in this.onTileList) {
-            if(placeList[plottableName] != null) {
-                return placeList[plottableName];
+        for(let plottableID in this.onTileList) {
+            if(placeList[plottableID] != null) {
+                return placeList[plottableID];
             }
         }
         return null;
     }
 
     getEvent() {
-        // // get number between 0 and 99
-        // let random = Math.floor(Math.random() * 100);
-        //
-        // if(random < BIRTH_CHANCE[this.dangerLevel]) {
-        //     let monster = monsterList.randomMonster().clone();
-        //     console.log("Fighting " + monster.name);
-        //     return new FightEvent("FightEvent " + monster.name, monster.desc,
-        //         this.getEvent(), monster);
-        // }
+        let enemy = this.getEnemy(me.id);
+        if(enemy !== null) {
+            return new FightEvent("Fight with " + enemy.id, enemy.desc, null, enemy);
+        }
 
         return new Default(this);
     }

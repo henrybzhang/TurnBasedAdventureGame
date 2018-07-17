@@ -1,7 +1,7 @@
 "use strict";
 
 import {tileList, placeList, monsterList, activeMonsters} from "../../Data.js";
-import {readFile, chooseRandom} from "../../Miscellaneous.js";
+import {readFile, chooseRandom, findObj} from "../../Miscellaneous.js";
 import Plottable from "../Plottable.js";
 import Tile from "./Tile.js";
 
@@ -9,7 +9,7 @@ import Tile from "./Tile.js";
 const PLOT_CSV_FILE = "assets/plot/csv/{0}_{1}.csv";
 const LAYER_NAMES = ["Bot", "Top"];
 
-export const BIRTH_CHANCE = [0, 1, 5];
+export const BIRTH_CHANCE = [0, 5, 5];
 
 export default class Place extends Plottable {
 
@@ -55,12 +55,12 @@ export default class Place extends Plottable {
                     }
 
                     if(this.plot[y][x] == null) {
-                        let tileToCopy = tileList[row[x]];
+                        let tileToCopy = findObj(row[x], tileList);
                         this.plot[y][x] = new Tile(tileToCopy.name,
                                         tileToCopy.desc, tileToCopy.dangerLevel);
                         continue;
                     }
-                    this.plot[y][x].addTile(row[x]);
+                    this.plot[y][x].addTile(findObj(row[x], tileList));
                 }
             }
         }
@@ -113,7 +113,8 @@ export default class Place extends Plottable {
     getTileCoordinates(tileType) {
         for(let y = 0; y < this.size; y++) {
             for(let x = 0; x < this.size; x++) {
-                if(this.plot[y][x].hasTile(tileType)) {
+                let tileID = findObj(tileType, tileList).id;
+                if(this.plot[y][x].hasTile(tileID)) {
                     return [x, y];
                 }
             }
@@ -123,8 +124,8 @@ export default class Place extends Plottable {
     static birthMonsters() {
 
         // only birth monsters in main map for now
-        for(let placeName in placeList) {
-            let place = placeList["main"];
+        for(let placeID in placeList) {
+            let place = findObj("main", placeList);
 
             for(let i = 0; i < place.plot.length; i++) {
                 for(let j = 0; j < place.plot[i].length; j++) {
@@ -134,8 +135,8 @@ export default class Place extends Plottable {
 
                     // birth a random monster
                     if(birthChance < BIRTH_CHANCE[index]) {
-                        activeMonsters.push(chooseRandom(monsterList).clone(j, i));
-                        console.log("({0}, {1})".format(j, i));
+                        let newMonster = chooseRandom(monsterList).clone(j, i);
+                        activeMonsters[newMonster.id] = newMonster;
                     }
                 }
             } // end of looping through the plot

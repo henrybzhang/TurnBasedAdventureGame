@@ -1,5 +1,6 @@
 import Template from './Template.js';
-import {me} from "../../Data.js";
+import {me, itemList} from "../../Data.js";
+import {findObj} from "../../Miscellaneous.js";
 
 export default class QuestEvent extends Template {
 
@@ -20,7 +21,10 @@ export default class QuestEvent extends Template {
 
     sideEffect(command, newEvent) {
         if(newEvent === null) {
-            me.addItems(this.quest.nextChapter.gain);
+            for(let itemName in this.quest.nextChapter.gain) {
+                let item = findObj(itemName, itemList);
+                me.addItems(item.id, this.quest.nextChapter.gain[itemName]);
+            }
         }
 
         if(this.eventJSON.hasOwnProperty("nextChapter")) {

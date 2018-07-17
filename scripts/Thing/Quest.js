@@ -1,6 +1,7 @@
 import Chapter from '../Chapter.js';
 import Thing from '../Thing.js';
 import {totalList} from '../Data.js';
+import {findObj} from "../Miscellaneous.js";
 
 export default class Quest extends Thing {
 
@@ -20,7 +21,7 @@ export default class Quest extends Thing {
         }
 
         this.nextChapter = this.story[startChapter];
-        totalList[this.nextChapter.triggerName].addQuest(this);
+        findObj(this.nextChapter.triggerName, totalList).addQuest(this);
     }
 
     /**
@@ -29,11 +30,11 @@ export default class Quest extends Thing {
     updateChapter(chapterName) {
 
         // remove the quest from the trigger to move on to the next chapter
-        let oldTrigger = this.nextChapter.triggerName;
-        if(oldTrigger === "N/A") {
+        if(this.nextChapter.name === "N/A") {
             return;
         }
-        delete totalList[oldTrigger].quests[this.name];
+        let oldTrigger = findObj(this.nextChapter.triggerName, totalList);
+        delete oldTrigger.quests[this.name];
 
         // this quest is finished
         if(chapterName === null) {
@@ -41,15 +42,16 @@ export default class Quest extends Thing {
             return;
         }
 
-        let newTrigger = this.story[chapterName].triggerName;
+        let newTrigger = findObj(this.story[chapterName].triggerName, totalList);
 
         // totalList does not include this trigger
-        if(!totalList.hasOwnProperty(newTrigger)) {
-            console.error(newTrigger + " is not a valid plottable");
+        if(newTrigger == null) {
+            console.error(this.story[chapterName].triggerName +
+                " is not a valid plottable");
             return;
         }
 
         this.nextChapter = this.story[chapterName];
-        totalList[newTrigger].addQuest(this);
+        newTrigger.addQuest(this);
     }
 }

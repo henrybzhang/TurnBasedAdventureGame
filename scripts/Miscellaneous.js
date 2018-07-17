@@ -24,3 +24,10 @@ export function deepAssign(target, obj) {
         target[key] = obj[key];
     }
 }
+
+export function chooseRandom(list) {
+    let keys = Object.keys(list);
+    let index = Math.floor(Math.random() * keys.length);
+
+    return list[keys[index]];
+}

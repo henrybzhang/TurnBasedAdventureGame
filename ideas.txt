@@ -1,0 +1,25 @@
+Quests:
+    lose items when sequence is finished
+    move player when sequence is finished
+    lose/gain items for each QuestEvent
+
+Items:
+    Equipping items
+    Consuming items
+
+Fighting:
+    Make items effect fighting
+    Critical hits
+
+Gameplay:
+    Maybe add more than 6 buttons?
+    Add Rest option
+    Add player info option
+
+Randomness:
+    Improve monster generation, make them randomly generate and move around
+    rather than random chance for each step
+
+Time:
+    Implement a time system in the game ex: quests
+

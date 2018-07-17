@@ -1,13 +1,15 @@
 "use strict";
 
-import {tileList} from "../../Data.js";
-import {readFile} from "../../Miscellaneous.js";
+import {tileList, placeList, monsterList, activeMonsters} from "../../Data.js";
+import {readFile, chooseRandom} from "../../Miscellaneous.js";
 import Plottable from "../Plottable.js";
 import Tile from "./Tile.js";
 
 // constants
 const PLOT_CSV_FILE = "assets/plot/csv/{0}_{1}.csv";
 const LAYER_NAMES = ["Bot", "Top"];
+
+export const BIRTH_CHANCE = [0, 1, 5];
 
 export default class Place extends Plottable {
 
@@ -34,8 +36,8 @@ export default class Place extends Plottable {
                 return;
             }
 
-            // create a matrix for the plot
-            if(this.plot == null) {
+            // check for null because of plot layers
+            if(this.plot === undefined) {
                 this.plot = new Array(plotRows.length);
             }
             for (let y = 0; y < plotRows.length; y++) {
@@ -73,16 +75,34 @@ export default class Place extends Plottable {
          this.plot[plottable.yPos][plottable.xPos].addPlottable(plottable);
     }
 
+    withinPlot(x, y) {
+        return (x < this.size && x >= 0 && y < this.size && y >= 0)
+    }
+
     getPlace(x, y) {
-        return this.plot[y][x].getPlace();
+        if(this.withinPlot(x, y)) {
+            return this.plot[y][x].getPlace();
+        }
+        return null;
+    }
+
+    getAllPlottables() {
+        let list = [];
+        for(let i = 0; i < this.size; i++) {
+            for(let j = 0; j < this.size; j++) {
+                let plottable = this.getTile(i, j).onTileList;
+                if(Object.keys(plottable).length !== 0) {
+                    list = list.concat(Object.values(plottable));
+                }
+            }
+        }
+        return list;
     }
 
     /**
      * @returns {Tile} The list of tiles at this coordinate in the place
      */
     getTile(xPos, yPos) {
-        console.log("List of Plottables on tile:");
-        console.log(this.plot[yPos][xPos].onTileList);
         return this.plot[yPos][xPos];
     }
 
@@ -98,6 +118,29 @@ export default class Place extends Plottable {
                 }
             }
         }
-        console.error();
+    }
+
+    static birthMonsters() {
+
+        // only birth monsters in main map for now
+        for(let placeName in placeList) {
+            let place = placeList["main"];
+
+            for(let i = 0; i < place.plot.length; i++) {
+                for(let j = 0; j < place.plot[i].length; j++) {
+                    // between 0 to 99
+                    let birthChance = Math.floor(Math.random() * 100);
+                    let index = place.getTile(j, i).dangerLevel;
+
+                    // birth a random monster
+                    if(birthChance < BIRTH_CHANCE[index]) {
+                        activeMonsters.push(chooseRandom(monsterList).clone(j, i));
+                        console.log("({0}, {1})".format(j, i));
+                    }
+                }
+            } // end of looping through the plot
+
+            break;
+        }
     }
 }

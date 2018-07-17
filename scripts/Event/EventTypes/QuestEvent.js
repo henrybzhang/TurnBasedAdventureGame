@@ -1,4 +1,5 @@
 import Template from './Template.js';
+import {me} from "../../Data.js";
 
 export default class QuestEvent extends Template {
 
@@ -17,12 +18,22 @@ export default class QuestEvent extends Template {
         this.quest = quest;
     }
 
-    sideEffects() {
+    sideEffect(command, newEvent) {
+        if(newEvent === null) {
+            me.addItems(this.quest.nextChapter.gain);
+        }
+
         if(this.eventJSON.hasOwnProperty("nextChapter")) {
             console.log("Next Chapter for this quest is chosen " + this.eventJSON.nextChapter);
-            this.quest.nextChapter = this.quest.story[this.eventJSON.nextChapter];
 
-            this.quest.updatePlottable();
+            // the quest is done
+            if(this.eventJSON.nextChapter === "DONE") {
+                this.quest.updateChapter(null);
+                return;
+            }
+
+            // move on to next chapter for this outcome
+            this.quest.updateChapter(this.eventJSON.nextChapter);
         }
     }
 

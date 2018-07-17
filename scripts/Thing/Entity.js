@@ -8,11 +8,13 @@ const ERROR_NOT_ENOUGH_ENERGY = "Not enough energy";
 const ERROR_UNKNOWN_ACTION = "Unknown action: {0}";
 
 const STAT_NAMES = ["hp", "energy", "agility", "strength"];
+const HP_INDEX = 0;
+const ENERGY_INDEX = 1;
+const AGILITY_INDEX = 2;
+const STRENGTH_INDEX = 3;
 const TOTAL_STAT_COUNT = STAT_NAMES.length;
 
 const INFO = "Level: {0}\nHP: {1}\nEnergy: {2}\nAgility: {3}\nStrength: {4}";
-
-const BASE_MULTIPLIER = 10;
 
 export default class Entity extends Mobile {
 
@@ -24,59 +26,73 @@ export default class Entity extends Mobile {
      * @param yPos
      * @param level {int} Level of this
      * @param baseStats {int[]} Array of stats
-     * @param inventory {String[]} List of itemNames
+     * @param inventory {Object} List of itemNames
      */
     constructor(name, desc, parentPlace, xPos, yPos, level, baseStats, inventory) {
         super(name, desc, parentPlace, xPos, yPos);
 
         this.level = level;
 
-        this.baseStats = {};
-        for(let i = 0; i < TOTAL_STAT_COUNT; i++) {
-            this.baseStats[STAT_NAMES[i]] = baseStats[i];
-        }
+        this.baseStats = baseStats;
 
-        this.inventory = [];
-        for(let itemName of inventory) {
+        this.inventory = {};
+        for(let itemName in inventory) {
+
+            // check if item actually exists
             let item = itemList[itemName];
-            if(item === null) {
+            if(item === undefined) {
                 console.error("{0} not found in itemList".format(itemName));
             }
 
-            this.inventory.push(itemList[itemName]);
+            this.inventory[itemName] = inventory[itemName];
         }
         this.money = [0, 0, 0];
 
         this.tempModifier = 1;
 
-        this.currentStats = JSON.parse(JSON.stringify(this.baseStats));
+        this.currentStats = {};
+        for(let i = 0; i < baseStats.length; i++) {
+            this.currentStats[STAT_NAMES[i]] = baseStats[i];
+        }
     }
 
     loseItem(itemName) {
-        let index = this.inventory.indexOf(itemList[itemName]);
-        if(index === -1) {
+        if(!this.inventory.hasOwnProperty(itemName)) {
             console.error("{0} does not have a {1}".format(this.name, itemName));
             return;
         }
-        this.inventory.splice(index, 1);
+
+        this.inventory[itemName]--;
+        if(this.inventory[itemName] === 0) {
+            delete this.inventory[itemName];
+        }
     }
 
-    gainItem(itemName) {
-        this.inventory.push(itemList[itemName]);
+    addItem(itemName) {
+        if(!this.inventory.hasOwnProperty(itemName)) {
+            this.inventory[itemName] = 0;
+        }
+        this.inventory[itemName]++;
+    }
+
+    /**
+     * Adds multiple items at a time
+     * @param itemNames {String[]} Array of strings containing item names
+     */
+    addItems(itemNames) {
+        for(let itemName in itemNames) {
+            this.addItem(itemName);
+        }
     }
 
     loot(entity) {
-        while(entity.inventory.length !== 0) {
-            this.inventory.push(entity.inventory.pop());
+        for(let itemName in entity.inventory) {
+            if(!this.inventory.hasOwnProperty(itemName)) {
+                this.inventory[itemName] = 0;
+            }
+            this.inventory[itemName] += entity.inventory[itemName];
+            delete entity.inventory[itemName];
         }
-    }
-
-    getInventory() {
-        let inventoryItemNames = [];
-        for(let item of this.inventory) {
-            inventoryItemNames.push(item.name);
-        }
-        return inventoryItemNames;
     }
 
     gainMoney(amount) {
@@ -133,16 +149,8 @@ export default class Entity extends Mobile {
         }
     }
 
-    baseStatsArray() {
-        let statsArray = [];
-        for(let i = 0; i < TOTAL_STAT_COUNT; i++) {
-            statsArray.push(this.baseStats[STAT_NAMES[i]]);
-        }
-        return statsArray;
-    }
-
     fatigue() {
-        return this.currentStats.energy / this.baseStats.energy;
+        return this.currentStats.energy / this.baseStats[ENERGY_INDEX];
     }
 
     hp() {
@@ -170,8 +178,8 @@ export default class Entity extends Mobile {
         return this.name + "\n" + this.statInfo();
     }
 
-    clone() {
-       return new Entity(this.name, this.desc, this.parentPlace, this.xPos,
-           this.yPos, this.level, this.baseStatsArray(), this.inventory);
+    clone(xPos, yPos) {
+       return new Entity(this.name, this.desc, this.parentPlace, xPos,
+           yPos, this.level, this.baseStats, this.inventory);
     }
 }

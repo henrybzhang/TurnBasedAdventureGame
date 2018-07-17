@@ -8,6 +8,8 @@ const TRADE_BUTTON_SET = ["Buy", "Sell", "Go Back"];
 const TRADE_SUCCESS_TEXT = "{0} was successfully {1}.";
 const TRADE_FAIL_TEXT = "{0} could not be {1} due to a deficit of {2}'s money.";
 
+const TRADE_TIME = 10;
+
 export default class Trade extends Event {
     constructor(title, storyText, npc, nextEvent) {
         super(title, storyText, TRADE_BUTTON_SET, nextEvent, npc);
@@ -28,7 +30,8 @@ export default class Trade extends Event {
 
             // itemName was chosen
             default:
-               return this.trade(command);
+                this.timeTaken = TRADE_TIME;
+                return this.trade(command);
         }
     }
 
@@ -49,7 +52,7 @@ export default class Trade extends Event {
         if(buyer.loseMoney(itemValue)) {
             seller.gainMoney(itemValue);
             seller.loseItem(itemName);
-            buyer.gainItem(itemName);
+            buyer.addItem(itemName);
             mainText = TRADE_SUCCESS_TEXT.format(itemName, tradeType);
         }
 

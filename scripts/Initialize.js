@@ -6,9 +6,10 @@ import Tool from './Thing/ItemTypes/Tool.js';
 import Clothing from './Thing/ItemTypes/Clothing.js';
 import Consumable from './Thing/ItemTypes/Consumable.js';
 
-import Entity from './Thing/Entity.js';
-import Tile from './Thing/Place/Tile.js';
+// Place needs to be imported before Tile
 import Place from './Thing/Place/Place.js';
+import Tile from './Thing/Place/Tile.js';
+import Entity from './Thing/Entity.js';
 import Quest from './Thing/Quest.js';
 
 const TILE_TEXT_FILE = "assets/json/tileText.json";
@@ -28,8 +29,6 @@ function createTiles() {
     for(let tileName in tileObject) {
         let tile = tileObject[tileName];
         Data.tileList[tileName] = new Tile(tileName, tile.desc, tile.dangerLevel);
-
-        Data.tileList[tileName].myTiles[name] = Data.tileList[tileName];
     }
 
     Object.assign(Data.totalList, Data.tileList);
@@ -102,8 +101,8 @@ function createMonsters() {
 
     for(let monsterName in monsterObject) {
         let m = monsterObject[monsterName];
-        Data.monsterList[monsterName] = new Entity(monsterName, m.desc, null,
-            -1, -1, m.level, m.baseStats, m.inventory);
+        Data.monsterList[monsterName] = new Entity(monsterName, m.desc,
+            Data.placeList["main"], -1, -1, m.level, m.baseStats, m.inventory);
     }
 
     Object.assign(Data.totalList, Data.monsterList);
@@ -115,8 +114,9 @@ function createMonsters() {
 function createNPCs() {
     console.log("Creating NPCs");
 
-    let startStats = [10, 10, 10, 10];
-    Data.npcList["ME"] = Data.createMe(new Entity("ME", "myDesc", Data.placeList["main"], 0, 0, 1, startStats, []));
+    let startStats = [10, 30, 10, 10];
+    Data.npcList["ME"] = Data.createMe(new Entity("ME", "myDesc",
+        Data.placeList["main"], 0, 0, 1, startStats, {}));
 
     let npcObject = JSON.parse(readFile(NPC_LIST_FILE));
 

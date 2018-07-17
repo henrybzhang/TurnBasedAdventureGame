@@ -1,17 +1,13 @@
 "use strict";
 
-import {me} from './Data.js';
 import './Initialize.js';
+import {questList} from "./Data.js";
 
 function start() {
-    initialize();
     createDisplay();
 
-    let event = me.getTile().getEvent();
+    let event = questList["Opening Scene"].nextChapter.rootEvent;
     event.updateDisplay();
-}
-
-function initialize() {
 }
 
 function createDisplay() {

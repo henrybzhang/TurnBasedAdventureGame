@@ -1,6 +1,6 @@
 "use strict";
 
-import Thing from "./Thing.js";
+import Thing from "../Thing.js";
 import Template from "../Event/EventTypes/Template.js";
 import Trade from "../Event/EventTypes/Trade.js";
 
@@ -56,6 +56,13 @@ export default class Plottable extends Thing {
             if(this.parentPlace === undefined) {
                 console.error(this.name + " has an undefined parentPlace");
             }
+            console.log(this.name + " has a null parentPlace");
+            return;
+        }
+
+        if(this.xPos === -1 || this.yPos === -1) {
+            console.log("Not adding {0} to plot due to invalid coordinates"
+                .format(this.name));
             return;
         }
 

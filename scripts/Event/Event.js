@@ -1,6 +1,11 @@
-import {me} from '../Data.js';
+import {me, activeMonsters} from '../Data.js';
+import Place from '../Thing/Place/Place.js';
+import {placeList} from "../Data.js";
 
 const PLOT_FILE = "assets/plot/images/{0}.png";
+
+// 24 hours in minutes
+const TIME_PERIOD = 1440;
 
 export default class Event {
 
@@ -8,7 +13,7 @@ export default class Event {
      * @param title {String} The title of this
      * @param storyText {String} The text of this to show
      * @param buttonSet {String[]} The texts of the buttons to be used
-     * @param nextEvent {Event] The next event to use
+     * @param nextEvent {Event} The next event to use
      * @param other {Plottable} Other plottables involved with this event
      */
     constructor(title, storyText, buttonSet, nextEvent, other) {
@@ -18,18 +23,21 @@ export default class Event {
 
         this.nextEvent = nextEvent;
         this.other = other;
+
+        this.timeTaken = 0;
     }
 
     buttonPress(command) {
-        this.sideEffects();
-
         let newEvent = this.chooseNewEvent(command);
-        console.log(me.inventory);
+        this.sideEffect(command, newEvent);
+        Event.gameTime += this.timeTaken;
+        Event.timeEvent();
 
         if(newEvent == null) {
             if(newEvent === undefined) {
                 console.error("Given a undefined event to display");
             }
+            console.log("Given a null event to display");
             newEvent = me.getTile().getEvent();
         }
         newEvent.updateDisplay();
@@ -55,9 +63,9 @@ export default class Event {
         });
 
         let $otherInfoText = $("#otherInfoText");
-        $otherInfoText.text("");
+        $otherInfoText.text("Time: {0}\n\n".format(Event.gameTime));
         if(this.other != null) {
-            $otherInfoText.text(this.other.info());
+            $otherInfoText.append(this.other.info());
         }
 
 
@@ -97,11 +105,73 @@ export default class Event {
     /**
      * Performs side effects when this event is triggered
      */
-    sideEffects() {
+    sideEffect() {
         console.log("No side effects");
     }
 
     canDo() {
         return true;
     }
+
+    static timeEvent() {
+        let x = [];
+        let y = [];
+
+        for(let monster of activeMonsters) {
+            let randomMove = Math.floor(Math.random() * 4);
+            switch(randomMove) {
+                case 0:
+                    monster.move(0, -1);
+                    break;
+                case 1:
+                    monster.move(0, 1);
+                    break;
+                case 2:
+                    monster.move(1, 0);
+                    break;
+                case 3:
+                    monster.move(-1, 0);
+                    break;
+            }
+            console.log("({0}, {1})".format(monster.xPos, monster.yPos));
+            x.push(monster.xPos);
+            y.push(monster.yPos);
+            console.log('------------------');
+        }
+
+        // End of each day
+        if(Event.gameTime >= TIME_PERIOD) {
+            console.log("It's a new day");
+            Event.gameTime -= TIME_PERIOD;
+            Event.dayCount++;
+
+            // Randomly create monsters that can move around
+            Place.birthMonsters();
+        }
+
+        console.log("Active Monster List");
+        console.log(activeMonsters);
+        console.log(x);
+        console.log(y);
+
+        if(x.length === activeMonsters.length) {
+            for (let i = 0; i < activeMonsters.length; i++) {
+                console.log("({0}, {1})".format(activeMonsters[i].xPos,
+                    activeMonsters[i].yPos));
+                if (x[i] !== activeMonsters[i].xPos ||
+                    y[i] !== activeMonsters[i].yPos) {
+                    console.error(activeMonsters[i]);
+                    console.error("Correct: ({0}, {1})".format(x[i], y[i]));
+                    console.error("Wrong: ({0}, {1})".format(activeMonsters[i].xPos, activeMonsters[i].yPos));
+                }
+            }
+        }
+        console.log('-----------------------------------------------');
+
+        // console.log("\nOn Main");
+        // console.log(placeList["main"].getAllPlottables());
+    }
 }
+
+Event.gameTime = TIME_PERIOD;
+Event.dayCount = 0;

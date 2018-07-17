@@ -3,21 +3,16 @@ export let tileList = {};
 
 export let itemList = {};
 
-export let monsterList = {
-    "randomMonster" : function() {
-        let keys = Object.keys(this);
-        let index = keys.indexOf("randomMonster");
-        keys.splice(index, 1);
+export let monsterList = {};
+export let activeMonsters = [];
 
-        return this[keys[Math.floor(Math.random() * keys.length)]];
-    }
-};
 export let npcList = {};
 
 export let questList = {};
 
 export let totalList = {};
 
+// the player
 export let me;
 export function createMe(player) {
     console.log("Creating me");

@@ -1,27 +1,20 @@
-import QuestEvent from './EventTypes/QuestEvent.js';
-import {totalList} from "../Data.js";
+import QuestEvent from './Event/EventTypes/QuestEvent.js';
 
 export default class Chapter {
     /**
      * @param name {String} Name of this
-     * @param triggerName {String} Name of the trigger
-     * @param triggerEvent {String} Used to trigger this eventSeq
-     * @param timeLength {int} Time it takes to go through this event (hours)
-     * @param gain {Object} The items gained in this eventSeq
-     * @param lose {Object} The items lost in this eventSeq
-     * @param eventSeries {Object} The series of events in this eventSeq
+     * @param chapter {Object}
      * @param quest {Quest} The quest this chapter is a part of
      */
-    constructor(name, triggerName, triggerEvent, timeLength, gain, lose,
-                eventSeries, quest) {
+    constructor(name, chapter, quest) {
         this.name = name;
-        this.triggerName = triggerName;
-        this.triggerEvent = triggerEvent;
-        this.timeLength = timeLength;
-        this.gain = gain;
-        this.lose = lose;
+        this.triggerName = chapter.triggerName;
+        this.triggerEvent = chapter.triggerEvent;
+        this.timeLength = chapter.timeLength;
+        this.gain = chapter.gain;
+        this.lose = chapter.lose;
 
-        this.eventSeries = eventSeries;
+        this.eventSeries = chapter.eventSeries;
         this.quest = quest;
         this.rootEvent = this.createEvent(0);
     }
@@ -39,13 +32,20 @@ export default class Chapter {
             console.log(this.eventSeries);
             console.log(index);
         }
+
+        // create a branch for each child of this event
         for(let child in event.children) {
+
+            // children hold the buttons and indexes of the next event
+            // for this sequence
             let nextIndex = event.children[child];
 
+            // make sure the nextIndex is a valid index
             if(typeof nextIndex !== "number") {
                 console.error(this.eventSeries[index]);
                 console.error("Has an invalid index");
             }
+
 
             if(nextIndex !== -1) {
                 eventObject[child] = this.createEvent(nextIndex);
@@ -56,10 +56,5 @@ export default class Chapter {
 
         return new QuestEvent(String(index), event.text, eventObject,
                                 this.eventSeries[index], this.quest);
-    }
-
-    addToPlottable() {
-        console.log(this.triggerName);
-        totalList[this.triggerName].quests.push(this);
     }
 }

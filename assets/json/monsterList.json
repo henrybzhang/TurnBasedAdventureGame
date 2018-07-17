@@ -2,17 +2,27 @@
   "bear": {
     "desc": "A huge bear",
     "level": 1,
-    "baseStats": [10, 5, 5, 10],
-    "inventory": [
-      "Animal Fur"
-    ]
+    "baseStats": [
+      10,
+      5,
+      5,
+      10
+    ],
+    "inventory": {
+      "Animal Fur": 1
+    }
   },
   "wolf": {
     "desc": "A big grey wolf",
     "level": 1,
-    "baseStats": [5, 10, 10, 5],
-    "inventory": [
-      "Animal Fur" 
-    ]
+    "baseStats": [
+      5,
+      10,
+      10,
+      5
+    ],
+    "inventory": {
+      "Animal Fur": 1
+    }
   }
 }

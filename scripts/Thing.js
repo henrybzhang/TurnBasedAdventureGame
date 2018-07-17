@@ -7,6 +7,9 @@ export default class Thing {
     constructor(name, desc) {
         this.name = name;
         this.desc = desc;
+        this.id = Thing.id++;
     }
 
 }
+
+Thing.id = 1;

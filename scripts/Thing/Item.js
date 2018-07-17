@@ -1,6 +1,6 @@
 "use strict";
 
-import Thing from "./Thing.js";
+import Thing from "../Thing.js";
 
 export const itemTypeEnum = Object.freeze({
     "MISC": 1,

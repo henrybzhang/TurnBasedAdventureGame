@@ -15,12 +15,15 @@ export default class FightEvent extends Event {
      * @param name {String}
      * @param storyText {String}
      * @param nextEvent {Event} not used
-     * @param opponent {Entity}
+     * @param opponents {Entity[]}
      */
-    constructor(name, storyText, nextEvent, opponent) {
-        super(name, storyText, FIGHT_BUTTON_SET, nextEvent, opponent);
+    constructor(name, storyText, nextEvent, opponents) {
+        super(name, storyText, FIGHT_BUTTON_SET, nextEvent, null);
+        this.opponents = opponents;
     }
 
+    // TODO: Potential bug if player runs from battle with 2+ opponents that are
+    // TODO: hostile to each other
     chooseNewEvent(command) {
 
         switch(command) {
@@ -33,11 +36,11 @@ export default class FightEvent extends Event {
                 this.timeTaken = FIGHT_TURN_TIME;
         }
 
-        let participants = [this.other, me];
-        let battle = new Battle(participants, true, command);
+        let participants = this.opponents.concat([me]);
+        let battle = new Battle(participants, command);
         let storyText = battle.turn();
 
-        if(battle.battleOver === true) {
+        if(battle.fighters.length === 1) {
             return new Next("Fight Over", storyText, me.getTile().getEvent());
         }
         return new Next("Fight Scene", storyText, this);

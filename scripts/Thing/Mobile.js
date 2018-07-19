@@ -71,27 +71,28 @@ export default class Mobile extends Plottable {
                 this.yPos = 0;
                 break;
         }
-
         // add this to the map
         this.getTile().addPlottable(this);
 
-        console.log("{0} moved {1} to ({2}, {3}) in {4}".format(this.name,
-            direction, this.xPos, this.yPos, this.parentPlace.name));
+        this.loseEnergy(this.energyCost("Move"));
+
+        console.log("{0} moved {1} to ({2}, {3}) in {4}".format(this.tag,
+            direction, this.xPos, this.yPos, this.parentPlace.tag));
     }
 
     /**
-     * @return {int}  - -1 for invalid move
-     *                  0 for exiting location
-     *                  1 for normal move
-     *                  2 for entering location
+     * @return {int}    - -1 for invalid move
+     *                    0 for exiting location
+     *                    1 for normal move
+     *                    2 for entering location
      */
     checkMove(xDelta, yDelta) {
         let x = this.xPos + xDelta;
         let y = this.yPos + yDelta;
 
         if(this.parentPlace.getPlace(x, y) != null)     return 2;
-        else if(this.parentPlace.withinPlot(x, y))      return 1;
-        else if(this.parentPlace.parentPlace != null)   return 0;
+        else if(this.parentPlace.withinPlot(x, y))        return 1;
+        else if(this.parentPlace.parentPlace != null)     return 0;
         else                                            return -1;
     }
 }

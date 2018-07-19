@@ -4,7 +4,7 @@ const NEXT_BUTTON_SET = ["Next"];
 
 export default class Next extends Event {
     constructor(title, storyText, nextEvent) {
-        super(title, storyText, NEXT_BUTTON_SET, nextEvent);
+        super(title, storyText, NEXT_BUTTON_SET, nextEvent, null);
     }
 
     chooseNewEvent(command) {

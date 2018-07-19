@@ -1,11 +1,14 @@
 import {me} from '../../Data.js';
 import Event from '../Event.js';
-import Inventory from "./Inventory.js";
+import Next from "./Next.js";
 
-const DEFAULT_BUTTON_SET = ["Interact", "North", "Inventory", "West", "South", "East"];
+const DEFAULT_BUTTON_SET = ["", "North", "", "West", "Interact", "East", "", "South", "Rest"];
 
 const INTERACT_TIME = 15;
 const MOVE_TIME = 15;
+const REST_TIME = 60;
+
+const REST_STORY_TEXT = "You decide to take a break and rest for one hour.";
 
 // TODO: perhaps return this instead of making a new event every time
 export default class Default extends Event {
@@ -31,11 +34,6 @@ export default class Default extends Event {
                 me.move(0, -1);
                 move = true;
                 break;
-            case "Inventory":
-                console.log(me.inventory);
-                nextEvent = new Inventory(me, this);
-                this.timeTaken = 0;
-                break;
             case "West":
                 me.move(-1, 0);
                 move = true;
@@ -48,11 +46,15 @@ export default class Default extends Event {
                 me.move(1, 0);
                 move = true;
                 break;
+            case "Rest":
+                this.timeTaken = REST_TIME;
+                me.rest();
+                nextEvent = new Next("Rest", REST_STORY_TEXT, me.getTile().getEvent());
+                break;
             default:
-                console.error("Unknown command given at default event: {0}".format(command));
+                console.error("Unknown command given at default event: |{0}|".format(command));
         }
         if(move === true) {
-            me.loseEnergy(me.energyCost("Move"));
             this.timeTaken = MOVE_TIME;
         }
 

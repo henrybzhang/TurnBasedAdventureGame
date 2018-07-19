@@ -16,12 +16,12 @@ export default class Place extends Plottable {
     constructor(name, desc, parentPlace, xPos, yPos, size, hasEntry) {
         super(name, desc, parentPlace, xPos, yPos);
 
-        console.log("Creating {0}".format(this.name));
-
         this.size = size;
         this.hasEntry = hasEntry;
 
         this.createPlot();
+
+        console.log("Created {0}".format(this.tag));
     }
 
     createPlot() {
@@ -64,7 +64,7 @@ export default class Place extends Plottable {
                 }
             }
         }
-        console.log("Created plot for {0} with size {1}\n\n".format(this.name, this.size));
+        console.log("Created plot for {0} with size {1}".format(this.name, this.size));
     }
 
     /**

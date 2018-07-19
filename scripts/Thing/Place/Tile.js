@@ -5,7 +5,7 @@ import Thing from "../../Thing.js";
 import Entity from "../Entity.js";
 import FightEvent from "../../Event/EventTypes/FightEvent.js";
 
-const PLOTTABLE_REMOVE_ERROR = "Trying to remove {0}#{1} when it isn't on the " +
+const PLOTTABLE_REMOVE_ERROR = "Trying to remove {0} when it isn't on the " +
     "tile in the first place";
 
 export default class Tile extends Thing {
@@ -41,7 +41,7 @@ export default class Tile extends Thing {
 
     removePlottable(plottable) {
         if(!this.onTileList.hasOwnProperty(plottable.id)) {
-            console.error(PLOTTABLE_REMOVE_ERROR.format(plottable.name, plottable.id));
+            console.error(PLOTTABLE_REMOVE_ERROR.format(plottable.tag));
             console.error("({0}, {1})".format(plottable.xPos, plottable.yPos));
         }
         delete this.onTileList[plottable.id];
@@ -51,14 +51,16 @@ export default class Tile extends Thing {
         return (tileID in this.myTiles);
     }
 
-    getEnemy(selfID) {
+    getEnemies(selfID) {
+        let enemies = [];
         for(let plottableID in this.onTileList) {
-            if(selfID !== plottableID &&
-                this.onTileList[plottableID] instanceof Entity) {
-                return this.onTileList[plottableID];
+            let plottable = this.onTileList[plottableID];
+            if(selfID !== plottableID && plottable instanceof Entity &&
+                plottable.hostility !== 0) {
+                enemies.push(plottable);
             }
         }
-        return null;
+        return enemies;
     }
 
     interact() {
@@ -68,6 +70,10 @@ export default class Tile extends Thing {
         let eventObject = {};
         let desc = "";
         for(let key of keys) {
+            if(key === me.id) {
+                continue;
+            }
+
             eventObject[totalList[key].name] = this.onTileList[key].interact();
             desc += this.onTileList[key].desc = '\n';
         }
@@ -86,9 +92,13 @@ export default class Tile extends Thing {
     }
 
     getEvent() {
-        let enemy = this.getEnemy(me.id);
-        if(enemy !== null) {
-            return new FightEvent("Fight with " + enemy.id, enemy.desc, null, enemy);
+        let enemies = this.getEnemies(me.id);
+        if(enemies.length !== 0) {
+            let storyText = "";
+            for(let enemy of enemies) {
+                storyText += enemy.desc + '\n';
+            }
+            return new FightEvent("Fight", storyText, null, enemies);
         }
 
         return new Default(this);

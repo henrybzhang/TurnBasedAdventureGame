@@ -8,6 +8,8 @@ export default class Thing {
         this.name = name;
         this.desc = desc;
         this.id = (Thing.id++).toString();
+
+        this.tag = this.name + "#" + this.id;
     }
 
 }

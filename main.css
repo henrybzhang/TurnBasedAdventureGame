@@ -1,8 +1,9 @@
-p {
-    white-space: pre-wrap;
+body {
+    overflow: hidden; /* stop page from scrolling */
 }
 
-div {
+p {
+    white-space: pre-wrap; /* allow newlines in paragraphs */
 }
 
 #mainContainer {
@@ -11,7 +12,7 @@ div {
     height: 80vh;
 }
 
-
+/* size should be according to window width */
 #storyContainer {
     background-color: #334350;
     flex-grow: 1;
@@ -22,13 +23,15 @@ div {
     color: Beige;
 }
 
+.sidebar {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 320px; /* 64px per square * 5 squares shown */
+}
 
 /* playerInfo stuff */
 #playerContainer {
     background-color: #053A70;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 320px;
     color: Khaki;
 }
 
@@ -40,9 +43,6 @@ div {
 /* otherInfo stuff */
 #otherContainer {
     background-color: #A86E63;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 320px;
 }
 
 #otherInfo {
@@ -71,15 +71,38 @@ img {
     content:url("assets/playerIcon.jpeg");
 }
 
-
 /* button stuff */
+#buttonContainer {
+    height: 20vh;
+}
+
+#playerInfoButtons {
+    width: 320px;
+    float: left;
+}
+
+.playerInfoButton {
+    height: 9.5vh;
+    width: 100%;
+}
+
+/* set the width in JavaScript */
+#playerActionButtons {
+    height: 20vh;
+    float: left;
+}
+
+.playerActionButton {
+    height: 6.33vh;
+    width: 33.3%;
+}
+
 button {
     background-color: #968664;
     color: white;
     text-align: center;
     font-size: 16px;
-    height: 9vh;
-    width: 33.3%;
+    float: left;
 }
 
 button:disabled {

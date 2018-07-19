@@ -2,29 +2,29 @@
   "bear": {
     "desc": "A huge bear",
     "level": 1,
+    "XP": 15,
     "baseStats": [
       10,
-      30,
+      15,
       5,
       15
     ],
     "inventory": {
       "Animal Fur": 1
-    },
-    "dangerLevel": 1
+    }
   },
   "wolf": {
     "desc": "A big grey wolf",
     "level": 1,
+    "XP": 5,
     "baseStats": [
       5,
-      30,
+      15,
       10,
       5
     ],
     "inventory": {
       "Animal Fur": 1
-    },
-    "dangerLevel": 1
+    }
   }
 }

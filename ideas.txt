@@ -5,17 +5,11 @@ Quests:
 
 Items:
     Equipping items
-    Consuming items
+    Consuming items - make food/thirst part of the game?
+    Money
 
 Fighting:
     Make items effect fighting
-    Critical hits
 
 Gameplay:
-    Maybe add more than 6 buttons?
-    Add Rest option
-    Add player info option
-
-Random:
-    Make monsters fight each other if on same square
-    Let monsters loot each other and level up from fighting
+    Make monsters have an action every 15 min? even is player or monster is resting

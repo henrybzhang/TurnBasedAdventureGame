@@ -7,6 +7,9 @@ import Tool from './Thing/ItemTypes/Tool.js';
 import Clothing from './Thing/ItemTypes/Clothing.js';
 import Consumable from './Thing/ItemTypes/Consumable.js';
 
+// Required Event order
+import './Event/EventTypes/Inventory.js';
+
 // Place needs to be imported before Tile
 import Place from './Thing/Place/Place.js';
 import Tile from './Thing/Place/Tile.js';
@@ -22,51 +25,65 @@ const QUEST_LIST_FILE = "assets/json/questList.json";
 
 const ERROR_NO_LOCATION_GIVEN = "No location given to place npc: {0}";
 
+const START_X = 0;
+const START_Y = 0;
+
 function createTiles() {
-    console.log("Creating Tiles");
+    console.groupCollapsed("Creating Tiles");
 
     let tileObject = JSON.parse(readFile(TILE_TEXT_FILE));
 
     for(let tileName in tileObject) {
         let tile = tileObject[tileName];
+        console.group(tileName);
         Data.tileList[Thing.id] = new Tile(tileName, tile.desc, tile.dangerLevel);
+        console.groupEnd();
     }
 
     Object.assign(Data.totalList, Data.tileList);
 
     console.log(Data.tileList);
-    console.log('\n');
+
+    console.groupEnd();
 }
 
 function createPlaces() {
-    console.log("Creating Places");
+    console.groupCollapsed("Creating Places");
 
     let placeObject = JSON.parse(readFile(PLACE_LIST_FILE));
 
     // push main map onto list
+    console.group("main");
     Data.placeList[Thing.id] = new Place("main", "main", null, -1, -1, 32, false);
+    console.groupEnd();
 
     for(let placeName in placeObject) {
         let p = placeObject[placeName];
+        console.group(placeName);
         Data.placeList[Thing.id] =
             new Place(placeName, p.desc, findObj(p.parentPlace, Data.placeList),
                 p.xPos, p.yPos, p.size, p.hasEntry);
+        console.groupEnd();
     }
 
     Object.assign(Data.totalList, Data.placeList);
 
     console.log(Data.placeList);
-    console.log('\n');
+
+    console.groupEnd();
 }
 
 function createItems() {
-    console.log("Creating Items");
+    console.groupCollapsed("Creating Items");
 
     let itemObject = JSON.parse(readFile(ITEM_LIST_FILE));
 
     for(let itemName in itemObject) {
         let item = itemObject[itemName];
         let itemType = itemTypeEnum[item.type];
+
+        console.group(itemName);
+
         switch(itemType) {
             case 1:
                 Data.itemList[Thing.id] = new Item(itemName, item.desc, item.rarity,
@@ -87,18 +104,22 @@ function createItems() {
             default:
                 console.error("Unknown type: {0}".format(item.type));
         }
+
+        console.groupEnd();
     }
 
     Object.assign(Data.totalList, Data.itemList);
 
     console.log(Data.itemList);
-    console.log('\n');
+
+    console.groupEnd();
 }
 
 function createMonsters() {
-    console.log("Creating Monsters");
+    console.groupCollapsed("Creating Monsters");
 
     let monsterObject = JSON.parse(readFile(MONSTER_LIST_FILE));
+    let monsterHostility = 1;
 
     for(let monsterName in monsterObject) {
         let m = monsterObject[monsterName];
@@ -108,22 +129,33 @@ function createMonsters() {
             inventory[item.id] = m.inventory[itemName];
         }
 
+        console.group(monsterName);
+
         Data.monsterList[Thing.id] = new Entity(monsterName, m.desc,
-            findObj("main", Data.placeList), -1, -1, m.level, m.baseStats, inventory);
+            findObj("main", Data.placeList), -1, -1, m.level, m.XP,
+            m.baseStats, monsterHostility, inventory);
+
+        console.groupEnd();
     }
 
     Object.assign(Data.totalList, Data.monsterList);
 
     console.log(Data.monsterList);
-    console.log('\n');
+
+    console.groupEnd();
 }
 
 function createNPCs() {
-    console.log("Creating NPCs");
+    console.groupCollapsed("Creating NPCs");
 
-    let startStats = [10, 30, 10, 10];
+    let npcHostility = 0;
+
+    console.group("ME");
+    let startStats = [10, 30, 8, 10];
     Data.npcList[Thing.id] = Data.createMe(new Entity("ME", "myDesc",
-        findObj("main", Data.placeList), 0, 0, 1, startStats, {}));
+        findObj("main", Data.placeList), START_X, START_Y, 1, 0, startStats,
+        npcHostility, {}));
+    console.groupEnd();
 
     let npcObject = JSON.parse(readFile(NPC_LIST_FILE));
 
@@ -150,31 +182,40 @@ function createNPCs() {
         } else {
             console.error(ERROR_NO_LOCATION_GIVEN.format(npcName));
         }
+
+        console.group(npcName);
+
         Data.npcList[Thing.id] = new Entity(npcName, npc.desc,
-            parentPlace, xPos, yPos, npc.level,
-            npc.baseStats, inventory);
+            parentPlace, xPos, yPos, npc.level, npc.XP,
+            npc.baseStats, npcHostility, inventory);
+
+        console.groupEnd();
     }
 
     Object.assign(Data.totalList, Data.npcList);
 
     console.log(Data.npcList);
-    console.log('\n');
+
+    console.groupEnd();
 }
 
 function createQuests() {
-    console.log("Creating Quests");
+    console.groupCollapsed("Creating Quests");
 
     let questObject = JSON.parse(readFile(QUEST_LIST_FILE));
 
     for(let questName in questObject) {
         let q = questObject[questName];
+        console.group(questName);
         Data.questList[Thing.id] = new Quest(questName, q.desc, q.story, q.start);
+        console.groupEnd();
     }
 
     Object.assign(Data.totalList, Data.questList);
 
     console.log(Data.questList);
-    console.log('\n');
+
+    console.groupEnd();
 }
 
 createTiles();

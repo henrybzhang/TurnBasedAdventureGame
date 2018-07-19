@@ -66,8 +66,8 @@ export default class Plottable extends Thing {
             return;
         }
 
-        console.log("Adding {0} to {1} at ({2}, {3})".format(this.name,
-            this.parentPlace.name, this.xPos, this.yPos));
+        console.log("Adding {0} to {1} at ({2}, {3})".format(this.tag,
+            this.parentPlace.tag, this.xPos, this.yPos));
 
         this.parentPlace.addToPlot(this);
     }

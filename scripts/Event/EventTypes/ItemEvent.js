@@ -1,8 +1,8 @@
-import Event from '../Event.js';
+import {me} from "../../Data.js";
 import Tool from "../../Thing/ItemTypes/Tool.js";
 import Consumable from "../../Thing/ItemTypes/Consumable.js";
 import Clothing from "../../Thing/ItemTypes/Clothing.js";
-import {me} from "../../Data.js";
+import Event from '../Event.js';
 import Inventory from "./Inventory.js";
 
 const ITEM_BUTTON_SET = ["Go Back", "Drop"];
@@ -31,18 +31,14 @@ export default class ItemEvent extends Event {
         // nextEvent should be and inventory event
         switch(command) {
             case "Go Back":
-                this.timeTaken = 0;
                 break;
             case "Drop":
                 me.loseItem(this.item.name);
-                this.timeTaken = 0;
                 break;
             case "Equip":
-                this.timeTaken = EQUIP_TIME;
                 // add equipping
                 break;
             case "Consume":
-                this.timeTaken = CONSUME_TIME;
                 // add consuming
                 break;
             default:

@@ -1,6 +1,6 @@
 "use strict";
 
-import Thing from "../Thing.js";
+import Thing from "../Game/Thing.js";
 
 export const itemTypeEnum = Object.freeze({
     "MISC": 1,
@@ -22,7 +22,7 @@ export default class Item extends Thing {
     }
 
     getValue() {
-        return Item.totalValue(this.value);
+        return this.value;
     }
 
     /**

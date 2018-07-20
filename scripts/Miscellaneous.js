@@ -29,7 +29,7 @@ export function deepAssign(target, obj) {
  *
  * @param name {String} The name of the object to be found
  * @param obj {Object} Holds many keys ex: placeList, tileList, npcList
- * @returns {*} The object
+ * @returns {Thing} The object
  */
 export function findObj(name, obj) {
     for(let id in obj) {
@@ -39,7 +39,7 @@ export function findObj(name, obj) {
     }
     console.log('------------------------------------------------------------');
     console.error("Could not find " + name + " in:");
-    console.log(obj);
+    console.error(obj);
     console.log('------------------------------------------------------------');
     return null;
 }

@@ -1,8 +1,8 @@
 "use strict";
 
-import Thing from "../Thing.js";
-import Template from "../Event/EventTypes/Template.js";
-import Trade from "../Event/EventTypes/Trade.js";
+import Thing from "../Game/Thing.js";
+import Template from "../EventTypes/Template.js";
+import Trade from "../EventTypes/Trade.js";
 
 /**
  * @classdesc A Thing that has a location on a map

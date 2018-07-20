@@ -1,4 +1,4 @@
-import Event from '../Event.js'
+import Event from '../Game/Event.js'
 
 const NEXT_BUTTON_SET = ["Next"];
 

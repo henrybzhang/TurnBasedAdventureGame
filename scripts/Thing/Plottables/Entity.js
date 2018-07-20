@@ -1,8 +1,13 @@
-import {itemList} from '../Data.js';
-import Item, {MONEY_TYPE_LIST, CONVERSION_RATE, MONEY_TYPES} from "./Item.js";
+"use strict";
+
+import {itemList} from '../../Data.js';
+import Item, {CONVERSION_RATE, MONEY_TYPES} from "../Item.js";
 import Mobile from './Mobile.js';
 
-"use strict";
+export const entityTypeEnum = Object.freeze({
+    "HUMAN": 1,
+    "BEAST": 2,
+});
 
 const ERROR_NOT_ENOUGH_ENERGY = "Not enough energy";
 const ERROR_UNKNOWN_ACTION = "Unknown action: {0}";
@@ -35,27 +40,35 @@ export default class Entity extends Mobile {
      * @param xPos
      * @param yPos
      * @param level {int} Level of this
-     * @param xp {int} Experienced gained when killing this
+     * @param deathXP {int} Experienced gained when killing this
      * @param baseStats {int[]} Array of stats
      * @param hostility {int} 1 for hostile, 0 for friendly
      * @param inventory {Object} Keys are id numbers, values are quantity of item
+     * @param money {int[]} Money given in an array from low to high value
      */
-    constructor(name, desc, parentPlace, xPos, yPos, level, xp,
-                baseStats, hostility, inventory) {
+    constructor(name, desc, parentPlace, xPos, yPos, level, deathXP,
+                baseStats, hostility, inventory, money) {
         super(name, desc, parentPlace, xPos, yPos);
 
         this.level = level;
-        this.hostility = hostility;
-        this.deathXP = xp;
-        this.XP = 0;
-
+        this.deathXP = deathXP;
         this.baseStats = baseStats;
+        this.hostility = hostility;
 
         this.inventory = {};
         for(let itemID in inventory) {
+            if(itemList[itemID] === undefined) {
+                console.error("{0} is not a valid item id".format(itemID));
+                continue;
+            }
+
             this.inventory[itemID] = inventory[itemID];
         }
-        this.money = [0, 0, 0];
+
+        this.money = money;
+        if(this.money === undefined) this.money = [0, 0, 0];
+
+        this.XP = 0;
 
         this.currentStats = {};
         for(let i = 0; i < baseStats.length; i++) {
@@ -75,7 +88,7 @@ export default class Entity extends Mobile {
         }
     }
 
-    addItem(itemID) {
+    gainItem(itemID) {
         if(!this.inventory.hasOwnProperty(itemID)) {
             this.inventory[itemID] = 0;
         }
@@ -87,9 +100,9 @@ export default class Entity extends Mobile {
      * @param itemID {String} ID of the item being added
      * @param quantity {int} Quantity of item to add
      */
-    addItems(itemID, quantity) {
+    gainItems(itemID, quantity) {
         for(let i = 0; i < quantity; i++) {
-            this.addItem(itemID);
+            this.gainItem(itemID);
         }
     }
 
@@ -111,7 +124,16 @@ export default class Entity extends Mobile {
         return items;
     }
 
+    /**
+     * @param amount {int[]}
+     */
     gainMoney(amount) {
+        if(amount.length !== MONEY_TYPES) {
+            console.error("Amount given is not the correct length array");
+            console.error(amount);
+            return;
+        }
+
         for(let i = 0; i < MONEY_TYPES; i++) {
             this.money[i] += amount[i];
         }
@@ -137,6 +159,12 @@ export default class Entity extends Mobile {
      * @returns {boolean} true if Entity has enough money to lose, false otherwise
      */
     loseMoney(amount) {
+        if(amount.length !== MONEY_TYPES) {
+            console.error("Amount given is not the correct length array");
+            console.error(amount);
+            return false;
+        }
+
         let remainder = Item.totalValue(this.money) - Item.totalValue(amount);
 
         if(remainder < 0) return false;

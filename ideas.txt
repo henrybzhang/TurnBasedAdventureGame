@@ -9,6 +9,9 @@ Items:
     Money
 
 Fighting:
+    When monsters are too tired to fight, they stay on the same square to fight
+    next turn, endless loop
+
     Make items effect fighting
 
 Gameplay:

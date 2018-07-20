@@ -1,30 +1,32 @@
 {
   "bear": {
     "desc": "A huge bear",
-    "level": 1,
-    "XP": 15,
+    "xp": 15,
     "baseStats": [
       10,
       15,
       5,
       15
     ],
+    "type": "BEAST",
     "inventory": {
-      "Animal Fur": 1
+      "Animal Fur": 1,
+      "Raw Meat": 1
     }
   },
   "wolf": {
     "desc": "A big grey wolf",
-    "level": 1,
-    "XP": 5,
+    "xp": 5,
     "baseStats": [
       5,
       15,
       10,
       5
     ],
+    "type": "BEAST",
     "inventory": {
-      "Animal Fur": 1
+      "Animal Fur": 1,
+      "Raw Meat": 1
     }
   }
 }

@@ -1,4 +1,4 @@
-import {me, activeMonsters} from "./Data.js";
+import {me, activeMonsters} from "../Data.js";
 
 const BATTLE_INFO = "Battle between: ";
 
@@ -212,6 +212,9 @@ export default class Battle {
 
             if(this.actionOccurred === false) {
                 console.log("Everyone is too tired to fight");
+                for(let fighter of this.fighters) {
+                    fighter.entity.rest();
+                }
                 break;
             }
         }

@@ -1,9 +1,9 @@
-import {placeList, totalList, me} from "../../Data.js";
-import Default from "../../Event/EventTypes/Default.js";
-import Template from "../../Event/EventTypes/Template.js"
-import Thing from "../../Thing.js";
-import Entity from "../Entity.js";
-import FightEvent from "../../Event/EventTypes/FightEvent.js";
+import {placeList, totalList, me} from "../Data.js";
+import Default from "../EventTypes/Default.js";
+import Template from "../EventTypes/Template.js"
+import Thing from "../Game/Thing.js";
+import Entity from "./Plottables/Entity.js";
+import FightEvent from "../EventTypes/FightEvent.js";
 
 const PLOTTABLE_REMOVE_ERROR = "Trying to remove {0} when it isn't on the " +
     "tile in the first place";

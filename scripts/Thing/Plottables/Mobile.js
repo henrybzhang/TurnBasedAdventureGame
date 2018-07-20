@@ -1,7 +1,7 @@
 "use strict";
 
-import Plottable from "./Plottable.js";
-import {me} from "../Data.js";
+import Plottable from "../Plottable.js";
+import {me} from "../../Data.js";
 
 const OUT_OF_BOUNDS = "{0} is trying to move {1} which is Out of Bounds";
 const ERROR_LEAVE_PLACE = "No specific direction when exiting {0}";

@@ -1,4 +1,4 @@
-import QuestEvent from './Event/EventTypes/QuestEvent.js';
+import QuestEvent from '../EventTypes/QuestEvent.js';
 
 export default class Chapter {
     /**
@@ -22,7 +22,7 @@ export default class Chapter {
     /**
      * Recursively create the chapter events
      * @param index {int} The index of the event in eventSeries
-     * @returns {QuestEvent} The event
+     * @returns {QuestEvent} The event with its children
      */
     createEvent(index) {
         let eventObject = {};

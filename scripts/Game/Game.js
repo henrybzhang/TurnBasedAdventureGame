@@ -1,8 +1,8 @@
 "use strict";
 
-import {activeMonsters, me} from "./Data.js";
-import Inventory from "./Event/EventTypes/Inventory.js";
-import Place from './Thing/Place/Place.js';
+import {activeMonsters, me} from "../Data.js";
+import Inventory from "../EventTypes/Inventory.js";
+import Place from '../Thing/Plottables/Place.js';
 import Battle from "./Battle.js";
 
 const PLOT_FILE = "assets/plot/images/{0}.png";
@@ -21,6 +21,8 @@ export default class Game {
      * For finishing up initializations dependent on a Game instance
      */
     initialize() {
+        console.group("Initializing this Game instance");
+
         let self = this;
         $(".playerInfoButton").each(function () {
             let $this = $(this);
@@ -30,6 +32,8 @@ export default class Game {
         });
 
         Place.birthMonsters();
+
+        console.groupEnd();
     }
 
     buttonPress(command) {

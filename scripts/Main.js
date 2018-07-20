@@ -3,7 +3,7 @@
 import {questList} from "./Data.js";
 import {findObj} from "./Miscellaneous.js";
 import './Initialize.js';
-import Game from "./Game.js";
+import Game from "./Game/Game.js";
 
 function start() {
     createDisplay();

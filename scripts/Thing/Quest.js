@@ -1,5 +1,5 @@
-import Chapter from '../Chapter.js';
-import Thing from '../Thing.js';
+import Chapter from '../Game/Chapter.js';
+import Thing from '../Game/Thing.js';
 import {totalList} from '../Data.js';
 import {findObj} from "../Miscellaneous.js";
 

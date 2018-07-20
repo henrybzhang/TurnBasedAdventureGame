@@ -1,8 +1,8 @@
-import Event from '../Event.js';
+import Event from '../Game/Event.js';
 import Trade from "./Trade.js";
-import {itemList} from "../../Data.js";
+import {itemList} from "../Data.js";
 import ItemEvent from "./ItemEvent.js";
-import {findObj} from "../../Miscellaneous.js";
+import {findObj} from "../Miscellaneous.js";
 
 const ITEM_DESC = "{0}({1}) - {2}\n";
 

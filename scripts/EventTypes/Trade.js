@@ -1,8 +1,8 @@
-import {itemList, me} from '../../Data.js';
-import Event from '../Event.js';
+import {itemList, me} from '../Data.js';
+import Event from '../Game/Event.js';
 import Next from './Next.js';
 import Inventory from "./Inventory.js";
-import {findObj} from "../../Miscellaneous.js";
+import {findObj} from "../Miscellaneous.js";
 
 const TRADE_BUTTON_SET = ["Buy", "Sell", "Go Back"];
 
@@ -54,7 +54,7 @@ export default class Trade extends Event {
         if(buyer.loseMoney(itemValue)) {
             seller.gainMoney(itemValue);
             seller.loseItem(item.id);
-            buyer.addItem(item.id);
+            buyer.gainItem(item.id);
             mainText = TRADE_SUCCESS_TEXT.format(itemName, tradeType);
         }
 

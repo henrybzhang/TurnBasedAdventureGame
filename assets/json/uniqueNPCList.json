@@ -1,0 +1,13 @@
+{
+  "Soldier Caravan": {
+    "name": "Soldier Caravan",
+    "desc": "A group of soldiers preparing for a journey.",
+    "inventory": {},
+    "wealthLevel": 3,
+    "type": "HUMAN",
+    "parentPlace": "main",
+    "relativeTo": "Westwend",
+    "xDelta": 0,
+    "yDelta": 1
+  }
+}

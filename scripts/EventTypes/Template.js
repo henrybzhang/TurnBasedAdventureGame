@@ -1,4 +1,4 @@
-import Event from '../Event.js';
+import Event from '../Game/Event.js';
 
 export default class Template extends Event {
     constructor(title, storyText, eventObject) {

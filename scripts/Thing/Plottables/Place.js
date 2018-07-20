@@ -3,7 +3,7 @@
 import {tileList, placeList, monsterList, activeMonsters} from "../../Data.js";
 import {readFile, chooseRandom, findObj} from "../../Miscellaneous.js";
 import Plottable from "../Plottable.js";
-import Tile from "./Tile.js";
+import Tile from "../Tile.js";
 
 // constants
 const PLOT_CSV_FILE = "assets/plot/csv/{0}_{1}.csv";
@@ -13,11 +13,12 @@ export const BIRTH_CHANCE = [0, 5, 5];
 
 export default class Place extends Plottable {
 
-    constructor(name, desc, parentPlace, xPos, yPos, size, hasEntry) {
+    constructor(name, desc, parentPlace, xPos, yPos, size, hasEntry, type) {
         super(name, desc, parentPlace, xPos, yPos);
 
         this.size = size;
         this.hasEntry = hasEntry;
+        this.type = type;
 
         this.createPlot();
 
@@ -122,6 +123,7 @@ export default class Place extends Plottable {
     }
 
     static birthMonsters() {
+        console.groupCollapsed("Adding to activeMonsters");
 
         // only birth monsters in main map for now
         for(let placeID in placeList) {
@@ -143,5 +145,7 @@ export default class Place extends Plottable {
 
             break;
         }
+
+        console.groupEnd();
     }
 }

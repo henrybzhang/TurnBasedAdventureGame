@@ -1,9 +1,9 @@
 "use strict";
 
-import Event from "../Event.js";
-import {me} from "../../Data.js";
+import Event from "../Game/Event.js";
+import {me} from "../Data.js";
 import Next from "./Next.js";
-import Battle from "../../Battle.js";
+import Battle from "../Game/Battle.js";
 
 const FIGHT_BUTTON_SET = ["Attack", "Defend", "Inventory", "Run"];
 const FIGHT_TURN_TIME = 1;

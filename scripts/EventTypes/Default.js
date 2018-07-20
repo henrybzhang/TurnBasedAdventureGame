@@ -1,5 +1,5 @@
-import {me} from '../../Data.js';
-import Event from '../Event.js';
+import {me} from '../Data.js';
+import Event from '../Game/Event.js';
 import Next from "./Next.js";
 
 const DEFAULT_BUTTON_SET = ["", "North", "", "West", "Interact", "East", "", "South", "Rest"];

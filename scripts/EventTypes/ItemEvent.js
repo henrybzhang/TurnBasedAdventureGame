@@ -1,8 +1,8 @@
-import {me} from "../../Data.js";
-import Tool from "../../Thing/ItemTypes/Tool.js";
-import Consumable from "../../Thing/ItemTypes/Consumable.js";
-import Clothing from "../../Thing/ItemTypes/Clothing.js";
-import Event from '../Event.js';
+import {me} from "../Data.js";
+import Tool from "../Thing/ItemTypes/Tool.js";
+import Consumable from "../Thing/ItemTypes/Consumable.js";
+import Clothing from "../Thing/ItemTypes/Clothing.js";
+import Event from '../Game/Event.js';
 import Inventory from "./Inventory.js";
 
 const ITEM_BUTTON_SET = ["Go Back", "Drop"];

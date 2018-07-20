@@ -2,6 +2,7 @@
   "Westwend": {
     "desc": "This is Westwend.",
     "parentPlace": "main",
+    "type": "TOWN",
     "xPos": 2,
     "yPos": 2,
     "size": 3,
@@ -14,6 +15,7 @@
   "Pirn": {
     "desc": "This is Pirn.",
     "parentPlace": "main",
+    "type": "TOWN",
     "xPos": 29,
     "yPos": 2,
     "size": 3,
@@ -25,6 +27,7 @@
   "Taedmorden": {
     "desc": "This is Taedmorden.",
     "parentPlace": "main",
+    "type": "TOWN",
     "xPos": 30,
     "yPos": 30,
     "size": 6,

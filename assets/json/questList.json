@@ -3,12 +3,12 @@
     "start": "Begin",
     "story": {
       "Begin": {
-        "triggerName": "ME",
+        "triggerName": "You",
         "triggerEvent": "N/A",
         "timeLength": 0,
         "gain": {
           "Dagger": 1,
-          "Silver": 1
+          "money": [8, 0, 0]
         },
         "lose": {},
         "eventSeries": [
@@ -86,7 +86,7 @@
         "triggerName": "Soldier Caravan",
         "triggerEvent": "Talk",
         "gain": {
-          "Copper": 6
+          "money": [6, 0, 0]
         },
         "lose": {
           "Gambeson": 1,

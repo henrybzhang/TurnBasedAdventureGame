@@ -1,7 +1,7 @@
 export default class Event {
 
     /**
-     * @param title {String} The title of this
+     * @param title {String} The title of this event
      * @param storyText {String} The text of this to show
      * @param buttonSet {String[]} The texts of the buttons to be used
      * @param nextEvent {Event} The next event to use
@@ -16,6 +16,8 @@ export default class Event {
         this.other = other;
 
         this.timeTaken = 0;
+
+        console.log(this.title);
     }
 
     /**

@@ -17,11 +17,9 @@ export default class ItemEvent extends Event {
 
         this.item = item;
 
-        if(item instanceof Tool) {
-            this.buttonSet.push("Equip");
-        } else if(item instanceof Consumable) {
+        if(item instanceof Consumable) {
             this.buttonSet.push("Consume");
-        } else if(item instanceof Clothing) {
+        } else if(item instanceof Clothing || item instanceof Tool) {
             this.buttonSet.push("Equip");
         }
     }

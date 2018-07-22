@@ -1,7 +1,7 @@
 {
   "bear": {
     "desc": "A huge bear",
-    "xp": 15,
+    "deathXP": 15,
     "baseStats": [
       10,
       15,
@@ -12,11 +12,12 @@
     "inventory": {
       "Animal Fur": 1,
       "Raw Meat": 1
-    }
+    },
+    "birthPriority": 2
   },
   "wolf": {
     "desc": "A big grey wolf",
-    "xp": 5,
+    "deathXP": 5,
     "baseStats": [
       5,
       15,
@@ -27,6 +28,7 @@
     "inventory": {
       "Animal Fur": 1,
       "Raw Meat": 1
-    }
+    },
+    "birthPriority": 1
   }
 }

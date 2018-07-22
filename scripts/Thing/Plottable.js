@@ -40,11 +40,7 @@ export default class Plottable extends Thing {
             }
         }
         return new Template("Interaction with " + this.name,
-                                this.desc, eventObject);
-    }
-
-    info() {
-
+                                this.desc, eventObject, this);
     }
 
     addQuest(quest) {

@@ -4,15 +4,17 @@ Quests:
     lose/gain items for each QuestEvent
 
 Items:
-    Equipping items
-    Consuming items - make food/thirst part of the game?
-    Money
+    Consuming items - make food part of the game?
 
 Fighting:
-    When monsters are too tired to fight, they stay on the same square to fight
-    next turn, endless loop
-
     Make items effect fighting
+    Make stats depend on fatigue
 
-Gameplay:
+Game play:
     Make monsters have an action every 15 min? even is player or monster is resting
+
+UI:
+Date/Time above Map
+Name of parentPlace above map
+
+Don't need to show stats until player detail screen

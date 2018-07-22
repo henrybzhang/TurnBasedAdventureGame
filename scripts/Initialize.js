@@ -14,7 +14,7 @@ import './EventTypes/Inventory.js';
 // Plottables needs to be imported before Tile
 import Place from './Thing/Plottables/Place.js';
 import Tile from './Thing/Tile.js';
-import Entity, {entityTypeEnum} from './Thing/Plottables/Entity.js';
+import {entityTypeEnum} from './Thing/Plottables/Entity.js';
 import Human from './Thing/Plottables/EntityTypes/Human.js';
 import Quest from './Thing/Quest.js';
 import Trader from "./Thing/Plottables/EntityTypes/Human/Trader.js";
@@ -93,19 +93,22 @@ function createItems() {
         switch(itemType) {
             case 1:
                 Data.itemList[Thing.id] = new Misc(itemName, item.desc,
-                    item.rarity, item.type, item.value);
+                    item.rarity, item.type, item.subType, item.value);
                 break;
             case 2:
                 Data.itemList[Thing.id] = new Tool(itemName, item.desc,
-                    item.rarity, item.type, item.value, item.strength);
+                    item.rarity, item.type, item.subType, item.value,
+                    item.strength);
                 break;
             case 3:
                 Data.itemList[Thing.id] = new Clothing(itemName, item.desc,
-                    item.rarity, item.type, item.value, item.resistance);
+                    item.rarity, item.type, item.subType, item.value,
+                    item.resistance);
                 break;
             case 4:
                 Data.itemList[Thing.id] = new Consumable(itemName, item.desc,
-                    item.rarity, item.type, item.value, item.strength);
+                    item.rarity, item.type, item.subType, item.value,
+                    item.strength);
                 break;
             default:
                 console.error("Unknown type: {0}".format(item.type));
@@ -135,13 +138,13 @@ function createMonsters() {
         switch(monsterType) {
             case 1:
                 Data.monsterList[Thing.id] = new Human(monsterName, m.desc,
-                    findObj("main", Data.placeList), -1, -1, m.level, m.XP,
-                    m.baseStats, m.hostility, inventory, m.wealthLevel);
+                    findObj("main", Data.placeList), -1, -1, m.level, m.deathXP,
+                    m.baseStats, m.hostility, inventory, m.wealthLevel, m.birthPriority);
                 break;
             case 2:
                 Data.monsterList[Thing.id] = new Beast(monsterName, m.desc,
-                    findObj("main", Data.placeList), -1, -1, m.level, m.XP,
-                    m.baseStats, m.hostility, inventory);
+                    findObj("main", Data.placeList), -1, -1, m.level, m.deathXP,
+                    m.baseStats, m.hostility, inventory, m.birthPriority);
                 break;
             default:
                 console.error("Unknown type: {0}".format(m.type));
@@ -201,7 +204,7 @@ function createUniqueNPCs() {
         switch(npcType) {
             case 1:
                 Data.npcList[Thing.id] = new Human(npcName, npc.desc,
-                    parentPlace, xPos, yPos, npc.level, npc.XP,
+                    parentPlace, xPos, yPos, npc.level, npc.deathXP,
                     npc.baseStats, undefined, inventory, npc.wealthLevel);
                 break;
             case 2:

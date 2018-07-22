@@ -9,15 +9,25 @@ export const itemTypeEnum = Object.freeze({
     "CONSUMABLE": 4
 });
 
-export const MONEY_TYPE_LIST = ["copper", "silver", "gold"];
+export const MONEY_TYPES = ["Copper", "Silver", "Gold"];
 export const CONVERSION_RATE = [1, 16, 128];
-export const MONEY_TYPES = MONEY_TYPE_LIST.length;
+export const MONEY_TYPE_LENGTH = MONEY_TYPES.length;
 
 export default class Item extends Thing {
-    constructor(name, desc, rarity, type, value) {
+
+    /**
+     * @param name
+     * @param desc
+     * @param rarity
+     * @param type
+     * @param subtype
+     * @param value
+     */
+    constructor(name, desc, rarity, type, subtype, value) {
         super(name, desc);
         this.rarity = rarity;
         this.type = type;
+        this.subType = subtype;
         this.value = value;
     }
 
@@ -31,7 +41,7 @@ export default class Item extends Thing {
      */
     static totalValue(amount) {
         let totalValue = 0;
-        for(let i = 0; i < MONEY_TYPES; i++) {
+        for(let i = 0; i < MONEY_TYPE_LENGTH; i++) {
             totalValue += amount[i] * CONVERSION_RATE[i];
         }
         return totalValue;

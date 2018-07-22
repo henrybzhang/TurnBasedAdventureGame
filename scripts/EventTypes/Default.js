@@ -5,7 +5,7 @@ import Next from "./Next.js";
 const DEFAULT_BUTTON_SET = ["", "North", "", "West", "Interact", "East", "", "South", "Rest"];
 
 const INTERACT_TIME = 15;
-const MOVE_TIME = 15;
+const MOVE_TIME = 20;
 const REST_TIME = 60;
 
 const REST_STORY_TEXT = "You decide to take a break and rest for one hour.";
@@ -18,8 +18,6 @@ export default class Default extends Event {
      */
     constructor(tile) {
         super(tile.name, tile.desc, DEFAULT_BUTTON_SET, null, null);
-        console.log(tile.name);
-        console.log('\n');
     }
 
     chooseNewEvent(command) {
@@ -49,7 +47,7 @@ export default class Default extends Event {
             case "Rest":
                 this.timeTaken = REST_TIME;
                 me.rest();
-                nextEvent = new Next("Rest", REST_STORY_TEXT, me.getTile().getEvent());
+                nextEvent = new Next("rest", REST_STORY_TEXT, me.getTile().getEvent());
                 break;
             default:
                 console.error("Unknown command given at default event: |{0}|".format(command));

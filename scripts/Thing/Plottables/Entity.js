@@ -1,8 +1,10 @@
 "use strict";
 
 import {itemList} from '../../Data.js';
-import Item, {CONVERSION_RATE, MONEY_TYPES} from "../Item.js";
+import Item, {CONVERSION_RATE, MONEY_TYPE_LENGTH, MONEY_TYPES} from "../Item.js";
 import Mobile from './Mobile.js';
+import {GEAR_SET} from "../../EventTypes/Gear.js";
+import {findObj} from "../../Miscellaneous.js";
 
 export const entityTypeEnum = Object.freeze({
     "HUMAN": 1,
@@ -29,7 +31,7 @@ const BASE_XP_LEVEL = 10;
 const XP_NEEDED_EXPONENT = 1.2;
 const LEVEL_UP_MULTIPLIER = 1.2;
 
-const INFO = "Level: {0}\nHP: {1}\nEnergy: {2}\nAgility: {3}\nStrength: {4}";
+const STAT_INFO = "\nLevel: {0}\nHP: {1}\nEnergy: {2}\nAgility: {3}\nStrength: {4}\n";
 
 export default class Entity extends Mobile {
 
@@ -45,19 +47,21 @@ export default class Entity extends Mobile {
      * @param hostility {int} 1 for hostile, 0 for friendly
      * @param inventory {Object} Keys are id numbers, values are quantity of item
      * @param money {int[]} Money given in an array from low to high value
+     * @param birthPriority {int} Priority for this entity has to be birthed
      */
     constructor(name, desc, parentPlace, xPos, yPos, level, deathXP,
-                baseStats, hostility, inventory, money) {
+                baseStats, hostility, inventory, money, birthPriority) {
         super(name, desc, parentPlace, xPos, yPos);
 
         this.level = level;
         this.deathXP = deathXP;
         this.baseStats = baseStats;
         this.hostility = hostility;
+        this.birthPriority = birthPriority;
 
         this.inventory = {};
-        for(let itemID in inventory) {
-            if(itemList[itemID] === undefined) {
+        for (let itemID in inventory) {
+            if (itemList[itemID] === undefined) {
                 console.error("{0} is not a valid item id".format(itemID));
                 continue;
             }
@@ -65,50 +69,42 @@ export default class Entity extends Mobile {
             this.inventory[itemID] = inventory[itemID];
         }
 
+        // key/value is slotName/itemID
+        this.gear = {};
+        for (let gearPart of GEAR_SET) {
+            this.gear[gearPart] = null;
+        }
+
         this.money = money;
-        if(this.money === undefined) this.money = [0, 0, 0];
+        if (this.money === undefined) this.money = [0, 0, 0];
 
         this.XP = 0;
 
         this.currentStats = {};
-        for(let i = 0; i < baseStats.length; i++) {
+        for (let i = 0; i < baseStats.length; i++) {
             this.currentStats[STAT_NAMES[i]] = baseStats[i];
         }
     }
 
-    loseItem(itemID) {
-        if(!this.inventory.hasOwnProperty(itemID)) {
-            console.error("{0} does not have a {1}".format(this.name, itemID));
+    equip(itemName) {
+        let item = findObj(itemName, itemList);
+
+        if(!this.inventory.hasOwnProperty(item.id)) {
+            console.error("You don't have " + item.name);
             return;
         }
 
-        this.inventory[itemID]--;
-        if(this.inventory[itemID] === 0) {
-            delete this.inventory[itemID];
+        if(this.gear[item.subType] !== null) {
+            this.gainItem(this.gear[item.subType]);
         }
-    }
 
-    gainItem(itemID) {
-        if(!this.inventory.hasOwnProperty(itemID)) {
-            this.inventory[itemID] = 0;
-        }
-        this.inventory[itemID]++;
-    }
-
-    /**
-     * Adds multiple items at a time
-     * @param itemID {String} ID of the item being added
-     * @param quantity {int} Quantity of item to add
-     */
-    gainItems(itemID, quantity) {
-        for(let i = 0; i < quantity; i++) {
-            this.gainItem(itemID);
-        }
+        this.loseItem(item.id);
+        this.gear[item.subType] = item.id;
     }
 
     loot(entity) {
-        for(let itemID in entity.inventory) {
-            if(!this.inventory.hasOwnProperty(itemID)) {
+        for (let itemID in entity.inventory) {
+            if (!this.inventory.hasOwnProperty(itemID)) {
                 this.inventory[itemID] = 0;
             }
             this.inventory[itemID] += entity.inventory[itemID];
@@ -118,38 +114,68 @@ export default class Entity extends Mobile {
 
     getInventoryItemNames() {
         let items = [];
-        for(let itemID in this.inventory) {
+        for (let itemID in this.inventory) {
             items.push(itemList[itemID].name);
         }
         return items;
     }
 
     /**
+     * Adds multiple items at a time
+     * @param itemID {String} ID of the item being added
+     * @param quantity {int} Quantity of item to add
+     */
+    gainItems(itemID, quantity) {
+        for (let i = 0; i < quantity; i++) {
+            this.gainItem(itemID);
+        }
+    }
+
+    gainItem(itemID) {
+        if (!this.inventory.hasOwnProperty(itemID)) {
+            this.inventory[itemID] = 0;
+        }
+        this.inventory[itemID]++;
+    }
+
+    /**
      * @param amount {int[]}
      */
     gainMoney(amount) {
-        if(amount.length !== MONEY_TYPES) {
+        if (amount.length !== MONEY_TYPE_LENGTH) {
             console.error("Amount given is not the correct length array");
             console.error(amount);
             return;
         }
 
-        for(let i = 0; i < MONEY_TYPES; i++) {
+        for (let i = 0; i < MONEY_TYPE_LENGTH; i++) {
             this.money[i] += amount[i];
         }
     }
 
     gainHP(amount) {
         this.currentStats.hp += amount;
-        if(this.currentStats.hp > this.baseStats[HP_INDEX]) {
+        if (this.currentStats.hp > this.baseStats[HP_INDEX]) {
             this.currentStats.hp = this.baseStats[HP_INDEX];
         }
     }
 
     gainEnergy(amount) {
         this.currentStats.energy += amount;
-        if(this.currentStats.energy > this.baseStats[ENERGY_INDEX]) {
+        if (this.currentStats.energy > this.baseStats[ENERGY_INDEX]) {
             this.currentStats.energy = this.baseStats[ENERGY_INDEX];
+        }
+    }
+
+    loseItem(itemID) {
+        if (!this.inventory.hasOwnProperty(itemID)) {
+            console.error("{0} does not have a {1}".format(this.name, itemID));
+            return;
+        }
+
+        this.inventory[itemID]--;
+        if (this.inventory[itemID] === 0) {
+            delete this.inventory[itemID];
         }
     }
 
@@ -159,7 +185,7 @@ export default class Entity extends Mobile {
      * @returns {boolean} true if Entity has enough money to lose, false otherwise
      */
     loseMoney(amount) {
-        if(amount.length !== MONEY_TYPES) {
+        if (amount.length !== MONEY_TYPE_LENGTH) {
             console.error("Amount given is not the correct length array");
             console.error(amount);
             return false;
@@ -167,9 +193,9 @@ export default class Entity extends Mobile {
 
         let remainder = Item.totalValue(this.money) - Item.totalValue(amount);
 
-        if(remainder < 0) return false;
+        if (remainder < 0) return false;
 
-        for(let i = MONEY_TYPES - 1; i >= 0; i--) {
+        for (let i = MONEY_TYPE_LENGTH - 1; i >= 0; i--) {
             this.money[i] = remainder / CONVERSION_RATE[i];
             remainder -= this.money[i] * CONVERSION_RATE[i];
         }
@@ -178,21 +204,21 @@ export default class Entity extends Mobile {
 
     loseHP(amount) {
         this.currentStats["hp"] -= amount;
-        if(this.currentStats.hp < 0){
+        if (this.currentStats.hp < 0) {
             this.currentStats.hp = 0;
         }
     }
 
     loseEnergy(amount) {
         this.currentStats.energy = this.currentStats.energy - amount;
-        if(this.currentStats.energy < 0){
+        if (this.currentStats.energy < 0) {
             this.currentStats.energy = 0;
             console.error(ERROR_NOT_ENOUGH_ENERGY);
         }
     }
 
     energyCost(action) {
-        switch(action) {
+        switch (action) {
             case "Attack":
                 return 1;
             case "Defend":
@@ -212,8 +238,8 @@ export default class Entity extends Mobile {
         console.log(GAIN_XP_TEXT.format(this.tag, amount, this.XP));
 
         let XPNeeded = Math.floor(
-            Math.pow(this.level, XP_NEEDED_EXPONENT) * BASE_XP_LEVEL );
-        if(this.XP >= XPNeeded) {
+            Math.pow(this.level, XP_NEEDED_EXPONENT) * BASE_XP_LEVEL);
+        if (this.XP >= XPNeeded) {
             this.XP -= XPNeeded;
             this.levelUp();
         }
@@ -221,7 +247,7 @@ export default class Entity extends Mobile {
 
     levelUp() {
         this.level++;
-        for(let i = 0; i < TOTAL_STAT_COUNT; i++) {
+        for (let i = 0; i < TOTAL_STAT_COUNT; i++) {
             this.baseStats[i] = Math.floor(this.baseStats[i] * LEVEL_UP_MULTIPLIER);
         }
 
@@ -261,23 +287,21 @@ export default class Entity extends Mobile {
     }
 
     statInfo() {
-        return INFO.format(this.level, this.hp(), this.energy(), this.agility(),
-                            this.strength());
+        return STAT_INFO.format(this.level, this.hp(), this.energy(), this.agility(),
+            this.strength());
+    }
+
+    moneyInfo() {
+        let temp = "\n";
+
+        for (let i = 0; i < MONEY_TYPE_LENGTH; i++) {
+            temp += "{0}: {1}\n".format(MONEY_TYPES[i], this.money[i]);
+        }
+
+        return temp;
     }
 
     info() {
-        return this.name + "\n" + this.statInfo();
-    }
-
-    /**
-     * Clones a monster to a certain position
-     * @param xPos
-     * @param yPos
-     * @returns {Entity}
-     */
-    clone(xPos, yPos) {
-         return new Entity(this.name, this.desc, this.parentPlace, xPos,
-             yPos, this.level, this.deathXP, this.baseStats, this.hostility,
-             this.inventory);
+        return this.name + this.statInfo() + this.moneyInfo();
     }
 }

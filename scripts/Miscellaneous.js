@@ -44,8 +44,19 @@ export function findObj(name, obj) {
     return null;
 }
 
+const PRIORITY_MULTIPLIER = 100;
 export function chooseRandom(obj) {
-    let keys = Object.keys(obj);
+    let keys = [];
+    for(let key in obj) {
+        let birthPriority = obj[key].birthPriority;
+        if(birthPriority !== undefined) {
+            let total = PRIORITY_MULTIPLIER / Math.pow(birthPriority, 2);
+            for(let i = 0; i < PRIORITY_MULTIPLIER / birthPriority; i++) {
+                keys.push(key);
+            }
+        }
+    }
+
     let index = Math.floor(Math.random() * keys.length);
 
     return obj[keys[index]];

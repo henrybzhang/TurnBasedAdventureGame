@@ -3,7 +3,7 @@
     "name": "Soldier Caravan",
     "desc": "A group of soldiers preparing for a journey.",
     "inventory": {},
-    "wealthLevel": 3,
+    "wealthLevel": 4,
     "type": "HUMAN",
     "parentPlace": "main",
     "relativeTo": "Westwend",

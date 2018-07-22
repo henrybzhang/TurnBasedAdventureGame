@@ -1,0 +1,127 @@
+#mainContainer {
+    display: flex;
+    flex-flow: row;
+    height: 70vh;
+}
+
+/* size should be according to window width */
+#storyContainer {
+    flex-grow: 1;
+    background-color: #E7D9AA;
+    border-radius: 15px;
+    border: 2px solid #929B7C;
+    margin: auto 0;
+    padding: 20px 20px;
+}
+
+#storyText {
+    font-size: 20px;
+    color: #334350;
+}
+
+.sidebar {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 320px; /* 64px per square * 5 squares shown */
+}
+
+/* playerInfo stuff */
+#playerContainer {
+    background-color: #303730;
+    border-radius: 15px;
+    border: 2px solid #929B7C;
+    margin: auto 10px;
+}
+
+#playerInfoText {
+    font-size: 25px;
+    padding-left: 20px;
+    color: #CD8B62;
+}
+
+#playerInfoButtons {
+    width: 320px;
+}
+
+.playerInfoButton {
+    height: 8vh;
+    width: 40%;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+
+/* otherInfo stuff */
+#otherContainer {
+    margin: 15px 10px;
+}
+
+#plotContainer {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    overflow: hidden;
+
+    background-color: #303730;
+    border-radius: 15px;
+    border: 2px solid #929B7C;
+}
+
+img {
+    position: absolute;
+}
+
+#playerIcon {
+    top: 145px;
+    left: 145px;
+    content:url("assets/playerIcon.jpeg");
+}
+
+#otherInfo {
+    position: relative;
+    top: 320px;
+
+    background-color: #6D4A46;
+    border-radius: 15px;
+    border: 2px solid #929B7C;
+    padding: 20px 20px;
+    margin: 10px 0;
+}
+
+#otherInfoText {
+    font-size: 25px;
+}
+
+#playerActionButtons {
+    height: 19vh;
+    text-align: center;
+
+    /*background-color: #6D4A46;*/
+    margin: 0 auto;
+}
+
+.playerActionButton {
+    height: 7vh;
+    width: 300px;
+
+    margin: 10px;
+}
+
+button {
+    background-color: #D3C8B4;
+    color: black;
+    font-size: 16px;
+    border: 2px solid #929B7C;
+    border-radius: 12px;
+    cursor: pointer;
+    vertical-align:top; /* stops button from moving with added text */
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+button:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+}

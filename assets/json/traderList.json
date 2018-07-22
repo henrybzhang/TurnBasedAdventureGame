@@ -1,19 +1,19 @@
 {
   "Fur Trader": {
-    "wealthLevel": 0,
+    "wealthLevel": 1,
     "inventory": {
       "Animal Fur": 3,
       "Leather": 3
     }
   },
   "Butcher": {
-    "wealthLevel": 1,
+    "wealthLevel": 2,
     "inventory": {
       "Raw Meat": 3
     }
   },
   "Blacksmith": {
-    "wealthLevel": 2,
+    "wealthLevel": 3,
     "inventory": {
       "Steel Sword": 2,
       "Spear": 3,
@@ -21,7 +21,7 @@
     }
   },
   "Innkeeper": {
-    "wealthLevel": 3,
+    "wealthLevel": 4,
     "inventory": {
       "Cooked Meat": 5,
       "Bread": 5,
@@ -30,7 +30,7 @@
     "squareType": "INN"
   },
   "Gem Trader": {
-    "wealthLevel": 4,
+    "wealthLevel": 5,
     "inventory": {
       "Diamond": 2,
       "Emerald": 3

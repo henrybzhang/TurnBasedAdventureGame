@@ -2,6 +2,7 @@ import Entity from "../Entity.js";
 
 // TODO: 10x^1.8
 const WEALTH_LEVELS = [
+    [0, 0, 0],
     [10, 0, 0],
     [8, 1, 0],
     [10, 2, 0],
@@ -27,16 +28,17 @@ export default class Human extends Entity {
      * @param hostility
      * @param inventory
      * @param wealthLevel {int} The index of WEALTH_LEVELS for this human
+     * @param birthPriority
      */
     constructor(name, desc, parentPlace, xPos, yPos, level, deathXP,
-                baseStats, hostility, inventory, wealthLevel) {
+                baseStats, hostility, inventory, wealthLevel, birthPriority) {
         if(level === undefined) level = START_LEVEL;
         if(deathXP === undefined) deathXP = DEATH_XP;
         if(baseStats === undefined) baseStats = BASE_STATS.slice();
         if(hostility === undefined) hostility = HOSTILITY;
 
         super(name, desc, parentPlace, xPos, yPos, level, deathXP, baseStats,
-            hostility, inventory, WEALTH_LEVELS[wealthLevel]);
+            hostility, inventory, WEALTH_LEVELS[wealthLevel], birthPriority);
 
     }
 }

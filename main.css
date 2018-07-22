@@ -1,110 +1,33 @@
 body {
     overflow: hidden; /* stop page from scrolling */
+    background: #28313A;
+    /*background:url("assets/parchment.jpg");*/
+    /*background-size: 100% auto;*/
 }
 
 p {
     white-space: pre-wrap; /* allow newlines in paragraphs */
 }
 
-#mainContainer {
-    display: flex;
-    flex-flow: row;
-    height: 80vh;
+#startContainer {
+    width: 100%;
+    text-align: center;
 }
 
-/* size should be according to window width */
-#storyContainer {
-    background-color: #334350;
-    flex-grow: 1;
-}
-
-#storyText {
-    font-size: 20px;
+#startText {
+    font-size: 30px;
     color: Beige;
 }
 
-.sidebar {
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 320px; /* 64px per square * 5 squares shown */
+#startButton {
+    background-color: #303730;
+    color: Beige;
+    font-size: 30px;
+    width: 200px;
+    height: 75px;
+    float: none;
 }
 
-/* playerInfo stuff */
-#playerContainer {
-    background-color: #053A70;
-    color: Khaki;
-}
-
-#playerInfoText {
-    font-size: 25px;
-}
-
-
-/* otherInfo stuff */
-#otherContainer {
-    background-color: #A86E63;
-}
-
-#otherInfo {
-    position: relative;
-    top: 320px;
-}
-
-#otherInfoText {
-    font-size: 25px;
-}
-
-#plotContainer {
-    position: absolute;
-    width: 320px;
-    height: 320px;
-    overflow: hidden;
-}
-
-img {
-    position: absolute;
-}
-
-#playerIcon {
-    top: 145px;
-    left: 145px;
-    content:url("assets/playerIcon.jpeg");
-}
-
-/* button stuff */
-#buttonContainer {
-    height: 20vh;
-}
-
-#playerInfoButtons {
-    width: 320px;
-    float: left;
-}
-
-.playerInfoButton {
-    height: 9.5vh;
-    width: 100%;
-}
-
-/* set the width in JavaScript */
-#playerActionButtons {
-    height: 20vh;
-    float: left;
-}
-
-.playerActionButton {
-    height: 6.33vh;
-    width: 33.3%;
-}
-
-button {
-    background-color: #968664;
-    color: white;
-    text-align: center;
-    font-size: 16px;
-    float: left;
-}
-
-button:disabled {
-    background-color: #CCBEA3;
+#startButton:hover {
+    opacity: 0.9;
 }

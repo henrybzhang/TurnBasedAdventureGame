@@ -5,9 +5,9 @@ const BATTLE_INFO = "Battle between: ";
 // storyText
 const MISSING_ENERGY = "{0} is too weary to {1}\n";
 const ATTACK_TEXT = "{0} attacks {1} for {2} damage.\n";
-const DEAD_TEXT = "{0} has died in this battle";
-const ESCAPE_TEXT = "{0} has ran away from this battle";
-const DEFEND_TEXT = "{0} took a defensive stance";
+const DEAD_TEXT = "{0} has died in this battle\n";
+const ESCAPE_TEXT = "{0} runs away from this battle.\n";
+const DEFEND_TEXT = "{0} takes a defensive stance.\n";
 const FIGHT_END_TEXT = "\n\nThe fight between {0} and {1} has ended. {0} emerges victorious.\n";
 
 const DEFEND_MODIFIER = 1.5;

@@ -5,7 +5,6 @@ import {findObj} from "../Miscellaneous.js";
 export default class QuestEvent extends Template {
 
     /**
-     *
      * @param title
      * @param storyText
      * @param eventObject

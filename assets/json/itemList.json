@@ -103,7 +103,7 @@
     ]
   },
   "Ale": {
-    "desc": "An minorly alcoholic drink.",
+    "desc": "An weak alcoholic drink.",
     "rarity": "COMMON",
     "type": "CONSUMABLE",
     "value": [
@@ -116,19 +116,10 @@
     "desc": "An expensive piece of bladed weaponry that can both slash and thrust. Bigger than the dagger but shorter than a spear.",
     "rarity": "RARE",
     "type": "TOOL",
+    "subType": "Weapon",
     "value": [
       0,
       3,
-      0
-    ]
-  },
-  "Gambeson": {
-    "desc": "A padded defensive jacket constructed out of linen or wool. Can protect the wearer more than one might think.",
-    "rarity": "COMMON",
-    "type": "CLOTHING",
-    "value": [
-      10,
-      0,
       0
     ]
   },
@@ -136,6 +127,7 @@
     "desc": "A weapon with a long shaft and a pointed tip. A common and useful weapon due to its long reach.",
     "rarity": "COMMON",
     "type": "TOOL",
+    "subType": "Weapon",
     "value": [
       10,
       0,
@@ -146,6 +138,18 @@
     "desc": "An tool that can be also used as an easily concealed weapon. Can be very dangerous in the right hands.",
     "rarity": "COMMON",
     "type": "TOOL",
+    "subType": "Weapon",
+    "value": [
+      10,
+      0,
+      0
+    ]
+  },
+  "Gambeson": {
+    "desc": "A padded defensive jacket constructed out of linen or wool. Can protect the wearer more than one might think.",
+    "rarity": "COMMON",
+    "type": "CLOTHING",
+    "subType": "Armor",
     "value": [
       10,
       0,

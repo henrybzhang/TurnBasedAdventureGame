@@ -2,12 +2,17 @@
 
 import {tileList, placeList, monsterList, activeMonsters} from "../../Data.js";
 import {readFile, chooseRandom, findObj} from "../../Miscellaneous.js";
+import Thing from "../../Game/Thing.js";
 import Plottable from "../Plottable.js";
 import Tile from "../Tile.js";
+import {clone} from "../../Clone.js";
 
 // constants
 const PLOT_CSV_FILE = "assets/plot/csv/{0}_{1}.csv";
 const LAYER_NAMES = ["Bot", "Top"];
+
+// 2 is needed to deepCopy objects such as inventory, baseStats, currentStats
+const DEEP_COPY_DEPTH = 2;
 
 export const BIRTH_CHANCE = [0, 5, 5];
 
@@ -137,11 +142,20 @@ export default class Place extends Plottable {
 
                     // birth a random monster
                     if(birthChance < BIRTH_CHANCE[index]) {
-                        let newMonster = chooseRandom(monsterList).clone(j, i);
+                        let newMonster = clone(chooseRandom(monsterList), false,
+                            DEEP_COPY_DEPTH);
+                        newMonster.id = Thing.id;
+                        newMonster.tag = newMonster.name + "#" + newMonster.id;
+                        Thing.id++;
+                        newMonster.xPos = j;
+                        newMonster.yPos = i;
+                        newMonster.addToParentPlace();
+
                         activeMonsters[newMonster.id] = newMonster;
                     }
                 }
             } // end of looping through the plot
+            console.log(activeMonsters);
 
             break;
         }

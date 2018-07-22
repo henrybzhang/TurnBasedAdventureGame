@@ -2,8 +2,11 @@
 
 import {activeMonsters, me} from "../Data.js";
 import Inventory from "../EventTypes/Inventory.js";
+import Gear from "../EventTypes/Gear.js";
 import Place from '../Thing/Plottables/Place.js';
 import Battle from "./Battle.js";
+import FightEvent from "../EventTypes/FightEvent.js";
+import Trade from "../EventTypes/Trade.js";
 
 const PLOT_FILE = "assets/plot/images/{0}.png";
 
@@ -24,12 +27,56 @@ export default class Game {
         console.group("Initializing this Game instance");
 
         let self = this;
+
+        $("body").empty();
+
+        // contains the upper three divs: playerInfo, storyText, otherInfo
+        $("<div>", {id: "mainContainer"}).appendTo("body");
+
+
+        $("<div>", {id: "playerContainer", class: "sidebar"}).appendTo("#mainContainer");
+        $("<p>", {id: "playerInfoText"}).appendTo("#playerContainer");
+
+
+        $("<div>", {id: "storyContainer"}).appendTo("#mainContainer");
+        $("<p>", {id: "storyText"}).appendTo("#storyContainer");
+
+
+        $("<div>", {id: "otherContainer", class: "sidebar"}).appendTo("#mainContainer");
+        $("<div>", {id: "plotContainer"}).appendTo("#otherContainer");
+        $("<img>", {id: "plot"}).appendTo("#plotContainer");
+        $("<img>", {id: "playerIcon"}).appendTo("#plotContainer");
+        $("<div>", {id: "otherInfo"}).appendTo("#otherContainer");
+        $("<p>", {id: "otherInfoText"}).appendTo("#otherInfo");
+
+
+        $("<div>", {id: "playerInfoButtons"}).appendTo("#playerContainer");
+        $("<button>", {
+            class: "playerInfoButton",
+            id: "Inventory",
+            text: "Inventory"
+        }).appendTo("#playerInfoButtons");
+        $("<button>", {
+            class: "playerInfoButton",
+            id: "Gear",
+            text: "Gear"
+        }).appendTo("#playerInfoButtons");
         $(".playerInfoButton").each(function () {
             let $this = $(this);
             $this.click(function () {
                 self.buttonPress($this.text());
             });
         });
+
+        $("<table>", {id: "playerActionButtons"}).appendTo("body");
+        $("#playerActionButtons").css({
+            width: ($("#storyContainer").width() + "px")
+        });
+        // create the buttons for the game
+        for (let i = 0; i < 9; i++) {
+            $("<button>", {class: "playerActionButton"}).appendTo("#playerActionButtons");
+        }
+
 
         Place.birthMonsters();
 
@@ -45,7 +92,8 @@ export default class Game {
             case "Inventory":
                 newEvent = new Inventory(me, this.currentEvent);
                 break;
-            case "Equipment":
+            case "Gear":
+                newEvent = new Gear(this.currentEvent);
                 break;
         }
 
@@ -67,7 +115,13 @@ export default class Game {
         this.updateDisplay(newEvent)
     }
 
+    /**
+     * @param event {Event} The new event to be displayed
+     */
     updateDisplay(event) {
+        console.log(event.title);
+        this.currentEvent = event;
+
         let self = this;
 
         // update playerInfo
@@ -89,21 +143,24 @@ export default class Game {
         let $otherInfoText = $("#otherInfoText");
         $otherInfoText.text(this.gameTime.formatted());
         if (event.other != null) {
-            $otherInfoText.append(event.other.info());
+            $otherInfoText.append(event.other.name);
+            if(event instanceof FightEvent) {
+                $otherInfoText.append(event.fightInfo());
+            }
         }
 
 
         // update buttons
         let $actionButtonSet = $(".playerActionButton");
-        $actionButtonSet.prop("disabled", false);
+        $actionButtonSet.prop("disabled", true);
+        $actionButtonSet.text("");
 
         $actionButtonSet.each(function (index) {
-            let $this = $(this);
-            $this.text("");
-
-            if (index >= event.buttonSet.length) {
-                return true;
+            if (index === event.buttonSet.length) {
+                return false;
             }
+
+            let $this = $(this);
 
             $this.text(event.buttonSet[index]);
             $this.off("click"); // gets rid of all listeners
@@ -111,12 +168,23 @@ export default class Game {
                 self.buttonPress(event.buttonSet[index]);
             });
 
-            if (!event.canDo(event.buttonSet[index], me)) {
-                $this.prop("disabled", true);
+            if ($this.text() && event.canDo(event.buttonSet[index], me)) {
+                $this.prop("disabled", false);
             }
         });
 
-        this.currentEvent = event;
+        let $Inventory = $("#Inventory");
+        $Inventory.prop("disabled", false);
+        if(event instanceof Inventory && event.self === me &&
+            !(event.nextEvent instanceof Trade)) {
+            $Inventory.prop("disabled", true);
+        }
+
+        let $Gear = $("#Gear");
+        $Gear.prop("disabled", false);
+        if(event instanceof Gear) {
+            $Gear.prop("disabled", true);
+        }
     }
 
     progressTime(amount) {

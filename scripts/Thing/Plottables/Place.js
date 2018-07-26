@@ -1,7 +1,7 @@
 "use strict";
 
 import {tileList, placeList, monsterList, activeMonsters} from "../../Data.js";
-import {readFile, chooseRandom, findObj} from "../../Miscellaneous.js";
+import {readFile, chooseRandom, getObjByName} from "../../Miscellaneous.js";
 import Thing from "../../Game/Thing.js";
 import Plottable from "../Plottable.js";
 import Tile from "../Tile.js";
@@ -27,12 +27,12 @@ export default class Place extends Plottable {
 
         this.createPlot();
 
-        console.log("Created {0}".format(this.tag));
+        console.log("Created {0}".fmt(this.tag));
     }
 
     createPlot() {
         for(let i = 0; i < LAYER_NAMES.length; i++) {
-            let plotTiles = readFile(PLOT_CSV_FILE.format(this.name, LAYER_NAMES[i]));
+            let plotTiles = readFile(PLOT_CSV_FILE.fmt(this.name, LAYER_NAMES[i]));
 
             let plotRows = plotTiles.split("\n");
             plotRows.pop();
@@ -61,16 +61,16 @@ export default class Place extends Plottable {
                     }
 
                     if(this.plot[y][x] == null) {
-                        let tileToCopy = findObj(row[x], tileList);
+                        let tileToCopy = getObjByName(row[x], tileList);
                         this.plot[y][x] = new Tile(tileToCopy.name,
                                         tileToCopy.desc, tileToCopy.dangerLevel);
                         continue;
                     }
-                    this.plot[y][x].addTile(findObj(row[x], tileList));
+                    this.plot[y][x].addTile(getObjByName(row[x], tileList));
                 }
             }
         }
-        console.log("Created plot for {0} with size {1}".format(this.name, this.size));
+        console.log("Created plot for {0} with size {1}".fmt(this.name, this.size));
     }
 
     /**
@@ -119,7 +119,7 @@ export default class Place extends Plottable {
     getTileCoordinates(tileType) {
         for(let y = 0; y < this.size; y++) {
             for(let x = 0; x < this.size; x++) {
-                let tileID = findObj(tileType, tileList).id;
+                let tileID = getObjByName(tileType, tileList).id;
                 if(this.plot[y][x].hasTile(tileID)) {
                     return [x, y];
                 }
@@ -132,7 +132,7 @@ export default class Place extends Plottable {
 
         // only birth monsters in main map for now
         for(let placeID in placeList) {
-            let place = findObj("main", placeList);
+            let place = getObjByName("main", placeList);
 
             for(let i = 0; i < place.plot.length; i++) {
                 for(let j = 0; j < place.plot[i].length; j++) {
@@ -140,8 +140,9 @@ export default class Place extends Plottable {
                     let birthChance = Math.floor(Math.random() * 100);
                     let index = place.getTile(j, i).dangerLevel;
 
-                    // birth a random monster
-                    if(birthChance < BIRTH_CHANCE[index]) {
+                    // birth a monster off chance and with empty square
+                    if(birthChance < BIRTH_CHANCE[index] &&
+                        !place.getTile(j, i).hasPlottables()) {
                         let newMonster = clone(chooseRandom(monsterList), false,
                             DEEP_COPY_DEPTH);
                         newMonster.id = Thing.id;

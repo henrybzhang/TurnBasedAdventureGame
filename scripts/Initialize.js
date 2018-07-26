@@ -1,5 +1,5 @@
 import * as Data from './Data.js';
-import {readFile, findObj} from "./Miscellaneous.js";
+import {readFile, getObjByName} from "./Miscellaneous.js";
 
 import Thing from './Game/Thing.js';
 import {itemTypeEnum} from './Thing/Item.js';
@@ -67,7 +67,7 @@ function createPlaces() {
 
         let p = placeObject[placeName];
         Data.placeList[Thing.id] =
-            new Place(placeName, p.desc, findObj(p.parentPlace, Data.placeList),
+            new Place(placeName, p.desc, getObjByName(p.parentPlace, Data.placeList),
                 p.xPos, p.yPos, p.size, p.hasEntry, p.type);
 
         console.groupEnd();
@@ -98,12 +98,12 @@ function createItems() {
             case 2:
                 Data.itemList[Thing.id] = new Tool(itemName, item.desc,
                     item.rarity, item.type, item.subType, item.value,
-                    item.strength);
+                    item.stats);
                 break;
             case 3:
                 Data.itemList[Thing.id] = new Clothing(itemName, item.desc,
                     item.rarity, item.type, item.subType, item.value,
-                    item.resistance);
+                    item.stats);
                 break;
             case 4:
                 Data.itemList[Thing.id] = new Consumable(itemName, item.desc,
@@ -111,7 +111,7 @@ function createItems() {
                     item.strength);
                 break;
             default:
-                console.error("Unknown type: {0}".format(item.type));
+                console.error("Unknown type: {0}".fmt(item.type));
         }
 
         console.groupEnd();
@@ -138,16 +138,16 @@ function createMonsters() {
         switch(monsterType) {
             case 1:
                 Data.monsterList[Thing.id] = new Human(monsterName, m.desc,
-                    findObj("main", Data.placeList), -1, -1, m.level, m.deathXP,
+                    getObjByName("main", Data.placeList), -1, -1, m.level, m.deathXP,
                     m.baseStats, m.hostility, inventory, m.wealthLevel, m.birthPriority);
                 break;
             case 2:
                 Data.monsterList[Thing.id] = new Beast(monsterName, m.desc,
-                    findObj("main", Data.placeList), -1, -1, m.level, m.deathXP,
+                    getObjByName("main", Data.placeList), -1, -1, m.level, m.deathXP,
                     m.baseStats, m.hostility, inventory, m.birthPriority);
                 break;
             default:
-                console.error("Unknown type: {0}".format(m.type));
+                console.error("Unknown type: {0}".fmt(m.type));
         }
 
         console.groupEnd();
@@ -164,7 +164,7 @@ function createEntities() {
 
     console.group("Player");
     Data.npcList[Thing.id] = Data.createMe(new Human("You", "myDesc",
-        findObj("Westwend", Data.placeList), START_X, START_Y, undefined,
+        getObjByName("Westwend", Data.placeList), START_X, START_Y, undefined,
         undefined, undefined, undefined, {}, 0));
     console.groupEnd();
 
@@ -188,17 +188,17 @@ function createUniqueNPCs() {
         let npc = npcObject[npcName];
         let npcType = entityTypeEnum[npc.type];
 
-        let parentPlace = findObj(npc.parentPlace, Data.placeList);
+        let parentPlace = getObjByName(npc.parentPlace, Data.placeList);
         let inventory = getInventory(npc.inventory);
 
         let xPos = npc.xPos;
         let yPos = npc.yPos;
         if("relativeTo" in npc) {
-            let plottable = findObj(npc.relativeTo, Data.totalList);
+            let plottable = getObjByName(npc.relativeTo, Data.totalList);
             xPos = plottable.xPos + npc["xDelta"];
             yPos = plottable.yPos + npc["yDelta"];
         } else if(xPos === undefined || yPos === undefined) {
-            console.error(ERROR_NO_LOCATION_GIVEN.format(npcName));
+            console.error(ERROR_NO_LOCATION_GIVEN.fmt(npcName));
         }
 
         switch(npcType) {
@@ -210,7 +210,7 @@ function createUniqueNPCs() {
             case 2:
                 break;
             default:
-                console.error("Unknown type: {0}".format(item.type));
+                console.error("Unknown type: {0}".fmt(item.type));
         }
 
         console.groupEnd();
@@ -264,6 +264,18 @@ function createQuests() {
     console.groupEnd();
 }
 
+function getInventory(nameInventory) {
+
+    let idInventory = {};
+
+    for(let itemName in nameInventory) {
+        let item = getObjByName(itemName, Data.itemList);
+        idInventory[item.id] = nameInventory[itemName];
+    }
+
+    return idInventory;
+}
+
 createTiles();
 createPlaces();
 createItems();
@@ -271,17 +283,7 @@ createMonsters();
 createEntities();
 createQuests();
 
-console.log("List of everything:");
+console.group("List of everything:");
 console.log(Data.totalList);
+console.groupEnd();
 
-function getInventory(nameInventory) {
-
-    let idInventory = {};
-
-    for(let itemName in nameInventory) {
-        let item = findObj(itemName, Data.itemList);
-        idInventory[item.id] = nameInventory[itemName];
-    }
-
-    return idInventory;
-}

@@ -1,6 +1,6 @@
 {
-  "bear": {
-    "desc": "A huge bear",
+  "Bear": {
+    "desc": "A huge bear stands erect in front of you",
     "deathXP": 15,
     "baseStats": [
       10,
@@ -15,7 +15,7 @@
     },
     "birthPriority": 2
   },
-  "wolf": {
+  "Wolf": {
     "desc": "A big grey wolf",
     "deathXP": 5,
     "baseStats": [

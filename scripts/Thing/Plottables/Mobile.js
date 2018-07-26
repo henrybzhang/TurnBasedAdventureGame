@@ -22,18 +22,18 @@ export default class Mobile extends Plottable {
 
         switch(moveStatus) {
             case -1:
-                console.warn(OUT_OF_BOUNDS.format(this.name, direction));
+                console.warn(OUT_OF_BOUNDS.fmt(this.name, direction));
                 return;
 
             case 0:
                 if(xDelta !== 0 && yDelta !== 0) {
-                    console.error(ERROR_LEAVE_PLACE.format(this.parentPlace));
+                    console.error(ERROR_LEAVE_PLACE.fmt(this.parentPlace));
                     return;
                 }
 
                 // only player can move out of their place
                 if(this !== me) {
-                    console.warn("{0} tried to exit {1}".format(this.name,
+                    console.warn("{0} tried to exit {1}".fmt(this.name,
                         this.parentPlace.name));
                     return;
                 }
@@ -60,7 +60,7 @@ export default class Mobile extends Plottable {
                                                         this.yPos + yDelta);
 
                 if(this !== me) {
-                    console.warn("{0} tried to enter {1}".format(this.name,
+                    console.warn("{0} tried to enter {1}".fmt(this.name,
                         place.name));
                     return;
                 }
@@ -76,7 +76,7 @@ export default class Mobile extends Plottable {
 
         this.loseEnergy(this.energyCost("Move"));
 
-        console.log("{0} moved {1} to ({2}, {3}) in {4}".format(this.tag,
+        console.log("{0} moved {1} to ({2}, {3}) in {4}".fmt(this.tag,
             direction, this.xPos, this.yPos, this.parentPlace.tag));
     }
 

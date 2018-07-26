@@ -4,6 +4,7 @@ import {me} from "../Data.js";
 import Battle from "../Game/Battle.js";
 import Event from "../Game/Event.js";
 import Next from "./Next.js";
+import Template from "./Template.js";
 
 const FIGHT_BUTTON_SET = ["Attack", "Defend", "Inventory", "Run"];
 const FIGHT_TURN_TIME = 1;
@@ -18,7 +19,7 @@ export default class FightEvent extends Event {
      * @param opponents {Entity[]}
      */
     constructor(title, storyText, nextEvent, opponents) {
-        super(title, storyText, FIGHT_BUTTON_SET, nextEvent, null);
+        super(title, storyText, FIGHT_BUTTON_SET, nextEvent, opponents[0]);
         this.opponents = opponents;
     }
 
@@ -26,32 +27,36 @@ export default class FightEvent extends Event {
     // TODO: hostile to each other, because they need to finish the fight
     chooseNewEvent(command) {
 
-        // switch(command) {
-        //     case "Run":
-        //         this.timeTaken = RUN_TIME;
-        //         break;
-        //     case "Inventory":
-        //         break;
-        //     default:
-        //         this.timeTaken = FIGHT_TURN_TIME;
-        // }
-
         let participants = this.opponents.concat([me]);
         let battle = new Battle(participants, command);
         let storyText = battle.turn();
 
-        if(battle.fighters.length === 1) {
-            return new Next("Fight Over", storyText, me.getTile().getEvent());
+        if (battle.fighters.length === 1) {
+            let nextEvent;
+            if (me.isAlive === false) {
+                nextEvent = new Template("Player Died",
+                    "You died.\n\nGAME OVER", {}, null);
+            } else {
+                nextEvent = me.getTile().getEvent();
+                if (command !== "Run") {
+                    storyText += me.gainXP(battle.totalXP);
+
+                    for (let opponent of this.opponents) {
+                        storyText += me.loot(opponent);
+                    }
+                }
+            }
+
+            return new Next("Fight Over", storyText, nextEvent);
         }
         return new Next("Fight Scene", storyText, this);
     }
 
-    sideEffect() {}
-
     fightInfo() {
         let temp = "\n";
-        for(let opponent of this.opponents) {
+        for (let opponent of this.opponents) {
             temp += opponent.name + '\n';
         }
+        return temp;
     }
 }

@@ -18,6 +18,11 @@ export default class Default extends Event {
      */
     constructor(tile) {
         super(tile.name, tile.desc, DEFAULT_BUTTON_SET, null, null);
+
+        for(let plottableID in tile.onTileList) {
+            if(plottableID === me.id) continue;
+            this.storyText += tile.onTileList[plottableID].desc;
+        }
     }
 
     chooseNewEvent(command) {
@@ -26,7 +31,6 @@ export default class Default extends Event {
         switch(command) {
             case "Interact":
                 nextEvent = me.getTile().interact();
-                this.timeTaken = INTERACT_TIME;
                 break;
             case "North":
                 me.move(0, -1);
@@ -45,35 +49,59 @@ export default class Default extends Event {
                 move = true;
                 break;
             case "Rest":
-                this.timeTaken = REST_TIME;
                 me.rest();
                 nextEvent = new Next("rest", REST_STORY_TEXT, me.getTile().getEvent());
                 break;
             default:
-                console.error("Unknown command given at default event: |{0}|".format(command));
+                console.error("Unknown command given at default event: |{0}|".fmt(command));
         }
         if(move === true) {
-            this.timeTaken = MOVE_TIME;
         }
 
         if(nextEvent !== undefined) {
             return nextEvent;
         }
 
-        console.log("List of Plottables on tile:");
-        console.log(me.getTile().onTileList);
-
         return me.getTile().getEvent();
     }
 
-    sideEffect() {
-        console.log("Default side effect");
+    findTimeTaken(command) {
+        switch(command) {
+            case "Interact":    return INTERACT_TIME;
+            case "Rest":        return REST_TIME;
+            default:            return MOVE_TIME;
+        }
     }
 
     canDo(action) {
+        let xDelta = 0;
+        let yDelta = 0;
+        switch(action) {
+            case "North":
+                yDelta = -1;
+                break;
+            case "South":
+                yDelta = 1;
+                break;
+            case "West":
+                xDelta = -1;
+                break;
+            case "East":
+                xDelta = 1;
+                break;
+        }
+
+        if(me.checkMove(xDelta, yDelta) === -1) {
+            return false;
+        }
+
         if(action === "North" || action === "South" ||
             action === "West" || action === "East") {
             return me.energy() >= me.energyCost("Move");
+        }
+
+        if(action === "Interact") {
+            return me.getTile().hasPlottables(me.id)
         }
 
         return true;

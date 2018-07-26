@@ -1,7 +1,7 @@
 import Human from "../Human.js";
 
-const TRADER_DESC = "A person specializing in the art of buying low and selling" +
-    "high.";
+const TRADER_DESC = "A person specializing in the art of buying low and selling " +
+    "high.\n";
 
 export default class Trader extends Human {
     /**

@@ -1,4 +1,4 @@
-String.prototype.format = function() {
+String.prototype.fmt = function() {
     let newString = this;
     for (let k in arguments) {
         newString = newString.split("{" + k + "}").join(arguments[k]);
@@ -8,7 +8,7 @@ String.prototype.format = function() {
 
 // synchronous reading to make sure everything is initialized before moving on
 export function readFile(filePath) {
-    console.log("Opening |{0}| to read.".format(filePath));
+    console.log("Opening |{0}| to read.".fmt(filePath));
 
     let xhr = new XMLHttpRequest();
     xhr.open("GET", filePath, false);
@@ -31,7 +31,7 @@ export function deepAssign(target, obj) {
  * @param obj {Object} Holds many keys ex: placeList, tileList, npcList
  * @returns {Thing} The object
  */
-export function findObj(name, obj) {
+export function getObjByName(name, obj) {
     for(let id in obj) {
         if(obj[id].name === name) {
             return obj[id];

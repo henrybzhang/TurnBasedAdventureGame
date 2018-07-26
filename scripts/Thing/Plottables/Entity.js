@@ -1,10 +1,10 @@
 "use strict";
 
-import {itemList} from '../../Data.js';
+import {itemList, me} from '../../Data.js';
 import Item, {CONVERSION_RATE, MONEY_TYPE_LENGTH, MONEY_TYPES} from "../Item.js";
 import Mobile from './Mobile.js';
 import {GEAR_SET} from "../../EventTypes/Gear.js";
-import {findObj} from "../../Miscellaneous.js";
+import {getObjByName} from "../../Miscellaneous.js";
 
 export const entityTypeEnum = Object.freeze({
     "HUMAN": 1,
@@ -14,24 +14,20 @@ export const entityTypeEnum = Object.freeze({
 const ERROR_NOT_ENOUGH_ENERGY = "Not enough energy";
 const ERROR_UNKNOWN_ACTION = "Unknown action: {0}";
 
-const GAIN_XP_TEXT = "{0} gained {1} XP for a total of {2} XP";
-const LEVEL_UP_TEXT = "{0} leveled up to {1}";
+const GAIN_XP_TEXT = "{0} gained {1} XP for a total of {2} XP.\n";
+const LEVEL_UP_TEXT = "{0} leveled up to {1}.\n";
+const LOOT_TEXT = "You found {0} {1}(s).\n";
 
-const STAT_NAMES = ["hp", "energy", "agility", "strength"];
-const HP_INDEX = 0;
-const ENERGY_INDEX = 1;
-const AGILITY_INDEX = 2;
-const STRENGTH_INDEX = 3;
-const TOTAL_STAT_COUNT = STAT_NAMES.length;
+export const STAT_NAMES = ["hp", "energy", "agility", "strength"];
+const STAT_COUNT = STAT_NAMES.length;
 
-const REST_ENERGY_GAIN = 5;
-const REST_HP_GAIN = 5;
+const REST_BASE_GAIN = 5;
 
 const BASE_XP_LEVEL = 10;
 const XP_NEEDED_EXPONENT = 1.2;
 const LEVEL_UP_MULTIPLIER = 1.2;
 
-const STAT_INFO = "\nLevel: {0}\nHP: {1}\nEnergy: {2}\nAgility: {3}\nStrength: {4}\n";
+const STAT_INFO = "Level: {0}\nHP: {1}\nEnergy: {2}\nAgility: {3}\nStrength: {4}\n";
 
 export default class Entity extends Mobile {
 
@@ -55,14 +51,13 @@ export default class Entity extends Mobile {
 
         this.level = level;
         this.deathXP = deathXP;
-        this.baseStats = baseStats;
         this.hostility = hostility;
         this.birthPriority = birthPriority;
 
         this.inventory = {};
         for (let itemID in inventory) {
             if (itemList[itemID] === undefined) {
-                console.error("{0} is not a valid item id".format(itemID));
+                console.error("{0} is not a valid item id".fmt(itemID));
                 continue;
             }
 
@@ -74,50 +69,87 @@ export default class Entity extends Mobile {
         for (let gearPart of GEAR_SET) {
             this.gear[gearPart] = null;
         }
+        this.gearStats = {};
+        for(let stat of STAT_NAMES) {
+            this.gearStats[stat] = 0;
+        }
 
         this.money = money;
         if (this.money === undefined) this.money = [0, 0, 0];
 
         this.XP = 0;
+        this.isAlive = true;
 
-        this.currentStats = {};
+        this.baseStats = {};
         for (let i = 0; i < baseStats.length; i++) {
-            this.currentStats[STAT_NAMES[i]] = baseStats[i];
+            this.baseStats[STAT_NAMES[i]] = baseStats[i];
         }
+
+        // is baseStats + gearStats
+        this.maxStats = JSON.parse(JSON.stringify(this.baseStats));
+
+        // only uses health and energy
+        // current strength/agility depends on maxStats and missing hp/energy
+        this.currentStats = JSON.parse(JSON.stringify(this.baseStats));
     }
 
     equip(itemName) {
-        let item = findObj(itemName, itemList);
+        let newGear = getObjByName(itemName, itemList);
 
-        if(!this.inventory.hasOwnProperty(item.id)) {
-            console.error("You don't have " + item.name);
+        if(!this.inventory.hasOwnProperty(newGear.id)) {
+            console.error("You don't have a " + newGear.name);
             return;
         }
 
-        if(this.gear[item.subType] !== null) {
-            this.gainItem(this.gear[item.subType]);
+        let subType = newGear.subType;
+        let currentGearID = this.gear[subType];
+        let currentGear = getObjByName(itemName, itemList);
+        console.log("Equipping {0} into slot {1}".fmt(currentGear.tag,
+            subType));
+
+        // move the current gear back into inventory
+        if(currentGearID !== null) {
+            this.gainItem(currentGearID);
+
+            // remove the stats for this gear
+            for(let stat of STAT_NAMES) {
+                this.gearStats[stat] -= currentGear.stats[stat];
+            }
         }
 
-        this.loseItem(item.id);
-        this.gear[item.subType] = item.id;
+        // move the newGear from inventory to gear slot
+        this.loseItem(newGear.id);
+        this.gear[newGear.subType] = newGear.id;
+
+        // add the stats for this gearStats
+        for(let stat of STAT_NAMES) {
+            this.gearStats[stat] += newGear.stats[stat];
+        }
+
+        for(let stat of STAT_NAMES) {
+            this.maxStats[stat] = this.baseStats[stat] + this.gearStats[stat];
+        }
+
+        console.log(this.gearStats);
+        console.log(this.maxStats);
     }
 
     loot(entity) {
+        let text = "You search {0} for loot.\n".fmt(entity.name);
+
         for (let itemID in entity.inventory) {
+            let item = itemList[itemID];
+
+            text += LOOT_TEXT.fmt(entity.inventory[itemID], item.name);
+
             if (!this.inventory.hasOwnProperty(itemID)) {
                 this.inventory[itemID] = 0;
             }
             this.inventory[itemID] += entity.inventory[itemID];
             delete entity.inventory[itemID];
         }
-    }
 
-    getInventoryItemNames() {
-        let items = [];
-        for (let itemID in this.inventory) {
-            items.push(itemList[itemID].name);
-        }
-        return items;
+        return text;
     }
 
     /**
@@ -155,21 +187,21 @@ export default class Entity extends Mobile {
 
     gainHP(amount) {
         this.currentStats.hp += amount;
-        if (this.currentStats.hp > this.baseStats[HP_INDEX]) {
-            this.currentStats.hp = this.baseStats[HP_INDEX];
+        if (this.currentStats.hp > this.maxStats.hp) {
+            this.currentStats.hp = this.maxStats.hp;
         }
     }
 
     gainEnergy(amount) {
         this.currentStats.energy += amount;
-        if (this.currentStats.energy > this.baseStats[ENERGY_INDEX]) {
-            this.currentStats.energy = this.baseStats[ENERGY_INDEX];
+        if (this.currentStats.energy > this.maxStats.energy) {
+            this.currentStats.energy = this.maxStats.energy;
         }
     }
 
     loseItem(itemID) {
         if (!this.inventory.hasOwnProperty(itemID)) {
-            console.error("{0} does not have a {1}".format(this.name, itemID));
+            console.error("{0} does not have a {1}".fmt(this.name, itemID));
             return;
         }
 
@@ -196,14 +228,14 @@ export default class Entity extends Mobile {
         if (remainder < 0) return false;
 
         for (let i = MONEY_TYPE_LENGTH - 1; i >= 0; i--) {
-            this.money[i] = remainder / CONVERSION_RATE[i];
+            this.money[i] = Math.floor(remainder / CONVERSION_RATE[i]);
             remainder -= this.money[i] * CONVERSION_RATE[i];
         }
         return true;
     }
 
     loseHP(amount) {
-        this.currentStats["hp"] -= amount;
+        this.currentStats.hp -= amount;
         if (this.currentStats.hp < 0) {
             this.currentStats.hp = 0;
         }
@@ -228,80 +260,117 @@ export default class Entity extends Mobile {
             case "Move":
                 return 1;
             default:
-                console.error(ERROR_UNKNOWN_ACTION.format(action));
+                console.error(ERROR_UNKNOWN_ACTION.fmt(action));
                 return 0;
         }
     }
 
+    /**
+     * Randomly chooses an action for the entity to take
+     * @returns {string}
+     */
+    chooseAction() {
+        let randomAction = Math.floor(Math.random() * 4);
+        switch(randomAction) {
+            case 0:     return "Defend";
+            default:    return "Attack";
+        }
+    }
+
     gainXP(amount) {
+        let text = GAIN_XP_TEXT.fmt(this.name, amount, this.XP);
+        console.log(GAIN_XP_TEXT.fmt(this.tag, amount, this.XP));
+
         this.XP += amount;
-        console.log(GAIN_XP_TEXT.format(this.tag, amount, this.XP));
 
         let XPNeeded = Math.floor(
             Math.pow(this.level, XP_NEEDED_EXPONENT) * BASE_XP_LEVEL);
         if (this.XP >= XPNeeded) {
             this.XP -= XPNeeded;
-            this.levelUp();
+            text += this.levelUp();
         }
+
+        return text;
     }
 
     levelUp() {
         this.level++;
-        for (let i = 0; i < TOTAL_STAT_COUNT; i++) {
-            this.baseStats[i] = Math.floor(this.baseStats[i] * LEVEL_UP_MULTIPLIER);
+        for (let stat of STAT_NAMES) {
+            this.baseStats[stat] = Math.floor(this.baseStats[stat]
+                                                * LEVEL_UP_MULTIPLIER);
+            this.maxStats[stat] = this.baseStats[stat] + this.gearStats[stat];
         }
 
         this.deathXP = Math.floor(this.deathXP * LEVEL_UP_MULTIPLIER);
 
-        console.log(LEVEL_UP_TEXT.format(this.tag, this.level));
+        console.log(LEVEL_UP_TEXT.fmt(this.tag, this.level));
+
+        return LEVEL_UP_TEXT.fmt(this.name, this.level);
     }
 
     rest() {
         console.log(this.tag + " rested");
-        this.gainEnergy(REST_ENERGY_GAIN);
-        this.gainHP(REST_HP_GAIN);
+        this.gainEnergy(this.maxStats.energy / REST_BASE_GAIN);
+        this.gainHP(this.maxStats.hp / REST_BASE_GAIN);
     }
 
+    die() {
+        if(this.isAlive === false) {
+            console.error(this.name + " is already dead");
+        }
+
+        this.isAlive = false;
+    }
+
+    // fraction of energy left
     fatigue() {
-        return this.currentStats.energy / this.baseStats[ENERGY_INDEX];
-    }
-
-    vitality() {
-        return this.currentStats.hp / this.baseStats[HP_INDEX];
-    }
-
-    hp() {
-        return this.currentStats["hp"];
+        return this.currentStats.energy / this.maxStats.energy;
     }
 
     energy() {
-        return this.currentStats["energy"];
+        return this.currentStats.energy;
+    }
+
+    // fraction of health left
+    vitality() {
+        return this.currentStats.hp / this.maxStats.hp;
+    }
+
+    hp() {
+        return this.currentStats.hp;
     }
 
     agility() {
-        return this.currentStats["agility"];
+        return this.maxStats.agility * Math.sqrt(this.vitality()) *
+            Math.sqrt(this.fatigue());
     }
 
     strength() {
-        return this.currentStats["strength"];
+        return this.maxStats.strength * Math.sqrt(this.vitality()) *
+            Math.sqrt(this.fatigue());
     }
 
     statInfo() {
-        return STAT_INFO.format(this.level, this.hp(), this.energy(), this.agility(),
-            this.strength());
+        return STAT_INFO.fmt(this.level, this.hp(), this.energy(),
+            this.agility(), this.strength());
     }
 
     moneyInfo() {
         let temp = "\n";
 
         for (let i = 0; i < MONEY_TYPE_LENGTH; i++) {
-            temp += "{0}: {1}\n".format(MONEY_TYPES[i], this.money[i]);
+            temp += "{0}: {1}\n".fmt(MONEY_TYPES[i], this.money[i]);
         }
 
         return temp;
     }
 
     info() {
-        return this.name + this.statInfo() + this.moneyInfo();
+        if(this === me) {
+            return super.info() + this.statInfo() + this.moneyInfo();
+        } else if(this.hostility === 0) {
+            return super.info();
+        }
+        return super.info() + this.statInfo();
     }
 }

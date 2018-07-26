@@ -18,6 +18,5 @@ export function createMe(player) {
     console.log("Creating me");
     me = player;
     console.log(me);
-    console.log("\n");
     return me;
 }

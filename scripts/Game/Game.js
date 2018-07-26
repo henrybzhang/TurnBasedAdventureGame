@@ -3,12 +3,14 @@
 import {activeMonsters, me} from "../Data.js";
 import Inventory from "../EventTypes/Inventory.js";
 import Gear from "../EventTypes/Gear.js";
-import Place from '../Thing/Plottables/Place.js';
-import Battle from "./Battle.js";
-import FightEvent from "../EventTypes/FightEvent.js";
 import Trade from "../EventTypes/Trade.js";
+import Battle from "./Battle.js";
+import Place from '../Thing/Plottables/Place.js';
+import ItemEvent from "../EventTypes/ItemEvent.js";
 
 const PLOT_FILE = "assets/plot/images/{0}.png";
+
+const EVENT_INFO = "Current Event: ({0})";
 
 export default class Game {
 
@@ -36,20 +38,6 @@ export default class Game {
 
         $("<div>", {id: "playerContainer", class: "sidebar"}).appendTo("#mainContainer");
         $("<p>", {id: "playerInfoText"}).appendTo("#playerContainer");
-
-
-        $("<div>", {id: "storyContainer"}).appendTo("#mainContainer");
-        $("<p>", {id: "storyText"}).appendTo("#storyContainer");
-
-
-        $("<div>", {id: "otherContainer", class: "sidebar"}).appendTo("#mainContainer");
-        $("<div>", {id: "plotContainer"}).appendTo("#otherContainer");
-        $("<img>", {id: "plot"}).appendTo("#plotContainer");
-        $("<img>", {id: "playerIcon"}).appendTo("#plotContainer");
-        $("<div>", {id: "otherInfo"}).appendTo("#otherContainer");
-        $("<p>", {id: "otherInfoText"}).appendTo("#otherInfo");
-
-
         $("<div>", {id: "playerInfoButtons"}).appendTo("#playerContainer");
         $("<button>", {
             class: "playerInfoButton",
@@ -68,6 +56,19 @@ export default class Game {
             });
         });
 
+        $("<div>", {id: "storyContainer"}).appendTo("#mainContainer");
+        $("<p>", {id: "storyText"}).appendTo("#storyContainer");
+
+
+        $("<div>", {id: "otherContainer", class: "sidebar"}).appendTo("#mainContainer");
+        $("<div>", {id: "plotContainer"}).appendTo("#otherContainer");
+        $("<img>", {id: "plot"}).appendTo("#plotContainer");
+        $("<img>", {id: "playerIcon"}).appendTo("#plotContainer");
+        $("<div>", {id: "otherInfo"}).appendTo("#otherContainer");
+        $("<p>", {id: "gameInfoText"}).appendTo("#otherInfo");
+        $("<p>", {id: "otherInfoText"}).appendTo("#otherInfo");
+
+
         $("<table>", {id: "playerActionButtons"}).appendTo("body");
         $("#playerActionButtons").css({
             width: ($("#storyContainer").width() + "px")
@@ -79,11 +80,13 @@ export default class Game {
 
 
         Place.birthMonsters();
-
         console.groupEnd();
     }
 
     buttonPress(command) {
+        console.group(EVENT_INFO.fmt(this.currentEvent.title));
+        console.log("Button: ({0})".fmt(command));
+
         let newEvent = null;
 
         // no time taken for these commands
@@ -98,11 +101,11 @@ export default class Game {
         }
 
         if (newEvent === null) {
+            // Game events independent of player and before player action
+            this.progressTime(this.currentEvent.findTimeTaken(command));
+
             newEvent = this.currentEvent.chooseNewEvent(command);
             this.currentEvent.sideEffect(command, newEvent);
-
-            // Game events independent of player
-            this.progressTime(this.currentEvent.timeTaken);
 
             if (newEvent === null) {
                 if (newEvent === undefined) {
@@ -112,21 +115,24 @@ export default class Game {
             }
         }
 
-        this.updateDisplay(newEvent)
+        this.updateDisplay(newEvent);
+
+        console.groupEnd();
     }
 
     /**
      * @param event {Event} The new event to be displayed
      */
     updateDisplay(event) {
-        console.log(event.title);
+        console.log("Updating Event to: ({0})".fmt(event.title));
         this.currentEvent = event;
-
         let self = this;
 
         // update playerInfo
         $("#playerInfoText").text(me.info());
 
+        let $gameInfoText = $("#gameInfoText");
+        $gameInfoText.text(this.gameTime.formatted() + me.parentPlace.name + '\n');
 
         // update storyText
         $("#storyText").text(event.storyText);
@@ -134,19 +140,16 @@ export default class Game {
 
         // update otherInfo
         let newImage = $("#plot");
-        newImage.attr("src", PLOT_FILE.format(me.parentPlace.name));
+        newImage.attr("src", PLOT_FILE.fmt(me.parentPlace.name));
         newImage.css({
             top: (128 - me.yPos * 64),
             left: (128 - me.xPos * 64)
         });
 
         let $otherInfoText = $("#otherInfoText");
-        $otherInfoText.text(this.gameTime.formatted());
+        $otherInfoText.text("");
         if (event.other != null) {
-            $otherInfoText.append(event.other.name);
-            if(event instanceof FightEvent) {
-                $otherInfoText.append(event.fightInfo());
-            }
+            $otherInfoText.append(event.other.info());
         }
 
 
@@ -174,15 +177,13 @@ export default class Game {
         });
 
         let $Inventory = $("#Inventory");
-        $Inventory.prop("disabled", false);
-        if(event instanceof Inventory && event.self === me &&
-            !(event.nextEvent instanceof Trade)) {
-            $Inventory.prop("disabled", true);
-        }
-
         let $Gear = $("#Gear");
+        $Inventory.prop("disabled", false);
         $Gear.prop("disabled", false);
-        if(event instanceof Gear) {
+        if(event instanceof Inventory && event.self === me &&
+            !(event.nextEvent instanceof Trade) || event instanceof Gear ||
+            event instanceof ItemEvent) {
+            $Inventory.prop("disabled", true);
             $Gear.prop("disabled", true);
         }
     }
@@ -191,10 +192,9 @@ export default class Game {
         if(amount === 0) {
             return;
         }
+        this.gameTime.addTime(amount);
 
         Game.timeEvent();
-
-        this.gameTime.addTime(amount);
 
         // end of the day
         if (this.gameTime.newDay === true) {
@@ -211,7 +211,10 @@ export default class Game {
     }
 
     static timeEvent() {
+        console.group("Time-based Events");
+
         // move all the monsters
+        console.groupCollapsed("Monsters are moving");
         for (let monsterID in activeMonsters) {
             let monster = activeMonsters[monsterID];
             if(monster.fatigue() < 0.3 || monster.vitality() < 0.5) {
@@ -237,12 +240,17 @@ export default class Game {
                     break;
             }
         }
+        console.groupEnd();
 
         // if 2+ monsters occupy the same square, make them fight
         Game.checkForConflict();
+
+        console.groupEnd();
     }
 
     static checkForConflict() {
+        console.groupCollapsed("Monsters fight");
+
         for (let monsterID in activeMonsters) {
             let monster = activeMonsters[monsterID];
 
@@ -252,25 +260,17 @@ export default class Game {
                 console.group("Battle");
 
                 let participants = enemies.concat([monster]);
-                let battle = new Battle(participants, null);
-
-                if(battle.fighters.length !== 1 && battle.actionOccurred === true) {
-                    console.error("Battle ended with multiple live fighters");
-                    continue;
-                }
-
-                for(let fighter of battle.fighters) {
-                    fighter.entity.gainXP(battle.totalXP);
-                }
+                new Battle(participants, null);
 
                 console.groupEnd();
             }
         } // end of activeMonsters loop
+
+        console.groupEnd();
     }
 }
 
 const TIME_FORMAT = "Day {0}, {1}:{2}\n";
-
 class Time {
     constructor() {
         this.minutes = 0;
@@ -301,6 +301,17 @@ class Time {
     }
 
     formatted() {
-        return TIME_FORMAT.format(this.days, this.hours, this.minutes);
+        let minutes = this.minutes.toString();
+        if(this.minutes < 10) {
+            minutes = "0" + minutes;
+        }
+
+        let hours = this.hours.toString();
+        if(this.hours < 10) {
+            hours = "0" + hours;
+        }
+
+
+        return TIME_FORMAT.fmt(this.days, hours, minutes);
     }
 }

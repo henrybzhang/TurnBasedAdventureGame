@@ -41,14 +41,43 @@ export default class Tile extends Thing {
 
     removePlottable(plottable) {
         if(!this.onTileList.hasOwnProperty(plottable.id)) {
-            console.error(PLOTTABLE_REMOVE_ERROR.format(plottable.tag));
-            console.error("({0}, {1})".format(plottable.xPos, plottable.yPos));
+            console.error(PLOTTABLE_REMOVE_ERROR.fmt(plottable.tag));
+            console.error("({0}, {1})".fmt(plottable.xPos, plottable.yPos));
         }
         delete this.onTileList[plottable.id];
     }
 
     hasTile(tileID) {
         return (tileID in this.myTiles);
+    }
+
+    interact() {
+        // keys are id numbers
+        let keys = Object.keys(this.onTileList);
+        console.log(keys);
+
+        let eventObject = {};
+        let desc = "";
+        for(let key of keys) {
+            if(key === me.id) {
+                continue;
+            }
+
+            eventObject[totalList[key].name] = this.onTileList[key].interact();
+            desc += this.onTileList[key].desc;
+        }
+        eventObject["Go Back"] = new Default(this);
+
+        return new Template("Interaction on " + this.name, desc, eventObject);
+    }
+
+    hasPlottables(selfID) {
+        for(let plottableID in this.onTileList) {
+            if(selfID !== plottableID) {
+                return true;
+            }
+        }
+        return false;
     }
 
     getEnemies(selfID) {
@@ -61,25 +90,6 @@ export default class Tile extends Thing {
             }
         }
         return enemies;
-    }
-
-    interact() {
-        // keys are id numbers
-        let keys = Object.keys(this.onTileList);
-
-        let eventObject = {};
-        let desc = "";
-        for(let key of keys) {
-            if(key === me.id) {
-                continue;
-            }
-
-            eventObject[totalList[key].name] = this.onTileList[key].interact();
-            desc += this.onTileList[key].desc = '\n';
-        }
-        eventObject["Go Back"] = new Default(this);
-
-        return new Template("Interaction on " + this.name, desc, eventObject);
     }
 
     getPlace() {

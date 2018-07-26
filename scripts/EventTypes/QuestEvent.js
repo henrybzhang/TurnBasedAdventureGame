@@ -1,6 +1,6 @@
 import Template from './Template.js';
 import {me, itemList} from "../Data.js";
-import {findObj} from "../Miscellaneous.js";
+import {getObjByName} from "../Miscellaneous.js";
 
 export default class QuestEvent extends Template {
 
@@ -26,7 +26,7 @@ export default class QuestEvent extends Template {
                     continue;
                 }
 
-                let item = findObj(itemName, itemList);
+                let item = getObjByName(itemName, itemList);
                 me.gainItems(item.id, this.quest.nextChapter.gain[itemName]);
             }
         }

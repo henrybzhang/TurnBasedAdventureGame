@@ -37,6 +37,7 @@
     font-size: 25px;
     padding-left: 20px;
     color: #CD8B62;
+    font-family: 'MedievalSharp', cursive;
 }
 
 #playerInfoButtons {
@@ -49,7 +50,6 @@
     margin-left: 20px;
     margin-bottom: 20px;
 }
-
 
 /* otherInfo stuff */
 #otherContainer {
@@ -84,12 +84,19 @@ img {
     background-color: #6D4A46;
     border-radius: 15px;
     border: 2px solid #929B7C;
-    padding: 20px 20px;
+    padding: 0 20px;
     margin: 10px 0;
+}
+
+#gameInfoText {
+    font-size: 25px;
+    color: #CD8B62;
+    font-family: 'MedievalSharp', cursive;
 }
 
 #otherInfoText {
     font-size: 25px;
+    font-family: 'MedievalSharp', cursive;
 }
 
 #playerActionButtons {
@@ -102,7 +109,7 @@ img {
 
 .playerActionButton {
     height: 7vh;
-    width: 300px;
+    width: 30%;
 
     margin: 10px;
 }
@@ -115,6 +122,7 @@ button {
     border-radius: 12px;
     cursor: pointer;
     vertical-align:top; /* stops button from moving with added text */
+    font-family: 'MedievalSharp', cursive;
 }
 
 button:hover {

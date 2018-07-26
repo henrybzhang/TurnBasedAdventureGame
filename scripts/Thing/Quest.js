@@ -1,7 +1,7 @@
 import Chapter from '../Game/Chapter.js';
 import Thing from '../Game/Thing.js';
 import {totalList} from '../Data.js';
-import {findObj} from "../Miscellaneous.js";
+import {getObjByName} from "../Miscellaneous.js";
 
 export default class Quest extends Thing {
 
@@ -21,7 +21,7 @@ export default class Quest extends Thing {
         }
 
         this.nextChapter = this.story[startChapter];
-        findObj(this.nextChapter.triggerName, totalList).addQuest(this);
+        getObjByName(this.nextChapter.triggerName, totalList).addQuest(this);
     }
 
     /**
@@ -33,7 +33,7 @@ export default class Quest extends Thing {
         if(this.nextChapter.name === "N/A") {
             return;
         }
-        let oldTrigger = findObj(this.nextChapter.triggerName, totalList);
+        let oldTrigger = getObjByName(this.nextChapter.triggerName, totalList);
         delete oldTrigger.quests[this.name];
 
         // this quest is finished
@@ -42,7 +42,7 @@ export default class Quest extends Thing {
             return;
         }
 
-        let newTrigger = findObj(this.story[chapterName].triggerName, totalList);
+        let newTrigger = getObjByName(this.story[chapterName].triggerName, totalList);
 
         // totalList does not include this trigger
         if(newTrigger == null) {

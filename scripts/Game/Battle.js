@@ -1,22 +1,44 @@
+"use strict";
+
 import {me, activeMonsters} from "../Data.js";
 
 const BATTLE_INFO = "Battle between: ";
 
 // storyText
-const MISSING_ENERGY = "{0} is too weary to {1}\n";
-const ATTACK_TEXT = "{0} attacks {1} for {2} damage.\n";
-const DEAD_TEXT = "{0} has died in this battle\n";
-const ESCAPE_TEXT = "{0} runs away from this battle.\n";
-const DEFEND_TEXT = "{0} takes a defensive stance.\n";
-const FIGHT_END_TEXT = "\n\nThe fight between {0} and {1} has ended. {0} emerges victorious.\n";
+const NO_ENERGY = "{0} {1} too weary to {2}.\n";
+const ATTACK_TEXT = "{0} {1} {2} for {3} damage.\n";
+const DIE_TEXT = "\n{0} {1} from this battle.\n";
+const RUN_TEXT = "{0} {1} away from this battle.\n";
+const DEFEND_TEXT = "{0} {1} a defensive stance.\n";
+const END_TEXT = "The fight between {0} and {1} has ended. " +
+    "{0} {2} victorious.\n\n";
+
+const VERBS = {
+    "ME": {
+        "ENERGY": "are",
+        "ATTACK": "attack",
+        "DIE": "die",
+        "RUN": "run",
+        "DEFEND": "take",
+        "END": "emerge"
+    },
+    "OTHER": {
+        "ENERGY": "is",
+        "ATTACK": "attacks",
+        "DIE": "dies",
+        "RUN": "runs",
+        "DEFEND": "takes",
+        "END": "emerges"
+    }
+};
 
 const DEFEND_MODIFIER = 1.5;
 
 // Crit chance:  0.1 * x ^ 3.3219
 // x = 1, chance = 10%
 // x = 2, chance = 100%
-const CRIT_CHANCE_POWER = 3.321928095;
-const CRIT_CHANCE_LINEAR = 10;
+const CRIT_CHANCE_1 = 0.1;
+const CRIT_CHANCE_2 = 3.321928095;
 
 const CRIT_DAMAGE_MODIFIER = 3;
 
@@ -33,20 +55,20 @@ export default class Battle {
      * @param command {String} The player's action if involved
      */
     constructor(entityList, command) {
-        if(entityList.length >= 3) console.error("More than three fighters");
+        if (entityList.length >= 3) console.error("More than three fighters");
 
         let includesPlayer = false;
 
         this.entityList = entityList;
         this.totalXP = 0;
 
-        this.actionOccurred = false;
+        this.actionOccurredThisTurn = false;
 
         // list of objects of Fighter class defined below
         this.fighters = [];
-        for(let entity of entityList) {
-            let fighter = new Fighter(entity, this.chooseAction(entity));
-            if(entity === me) {
+        for (let entity of entityList) {
+            let fighter = new Fighter(entity, entity.chooseAction());
+            if (entity === me) {
                 fighter = new Fighter(entity, command);
                 includesPlayer = true;
             }
@@ -54,9 +76,11 @@ export default class Battle {
             this.fighters.push(fighter);
         }
 
-        this.fighters.sort(function(a, b){ return b.speed - a.speed});
+        this.fighters.sort(function (a, b) {
+            return b.speed - a.speed
+        });
 
-        if(includesPlayer === true) {
+        if (includesPlayer === true) {
             return;
         }
 
@@ -71,88 +95,85 @@ export default class Battle {
         let storyText = "";
 
         // checks if an action occurred this time
-        this.actionOccurred = false;
+        this.actionOccurredThisTurn = false;
 
-        for(let i = 0; i < this.fighters.length; i++) {
+        for (let i = 0; i < this.fighters.length; i++) {
             let self = this.fighters[i];
+
+            let subj = "OTHER";
+            if (self.entity === me) subj = "ME";
 
             // randomly choose an enemy
             let enemy = self;
-            while(enemy === self) {
-                let randomEnemy = Math.floor(Math.random() * this.fighters.length);
-                enemy = this.fighters[randomEnemy];
+            while (enemy === self) {
+                let randomEnemyIndex = Math.floor(Math.random() *
+                    this.fighters.length);
+                enemy = this.fighters[randomEnemyIndex];
             }
 
             // self does not have enough energy to perform the chosen action
-            if(self.actionSuccess === false) {
-                storyText += MISSING_ENERGY.format(self.name, self.command);
-                console.log("{0} could not perform {1} due to lack of energy"
-                    .format(self.name, self.command));
+            // so skip his turn
+            if (self.actionSuccess === false) {
+                storyText += NO_ENERGY.fmt(self.name, VERBS[subj].ENERGY,
+                    self.command);
+                console.log(NO_ENERGY.fmt(self.tag, VERBS[subj].ENERGY,
+                    self.command));
                 continue;
             }
-            this.actionOccurred = true;
+            this.actionOccurredThisTurn = true;
 
-            switch(self.command) {
+            switch (self.command) {
                 case "Attack":
                     // between 0 and 1
-                    let critChance = 1 / CRIT_CHANCE_LINEAR *
-                        Math.pow(self.entity.agility() / enemy.entity.agility(),
-                            CRIT_CHANCE_POWER);
+                    let critChance = Math.pow(self.entity.agility() /
+                        enemy.entity.agility(), CRIT_CHANCE_2) * CRIT_CHANCE_1;
                     let damageModifier = 1;
-                    if(Math.random() < critChance) {
+                    if (Math.random() < critChance) {
                         damageModifier = CRIT_DAMAGE_MODIFIER;
                     }
 
                     let damage = Math.floor(self.attack / enemy.defense *
                         damageModifier);
+                    if (damage === 0) damage = damageModifier;
+                    if (enemy.entity.energy() === 0) damage = enemy.entity.hp();
 
-                    if(damage === 0) damage = damageModifier;
                     enemy.entity.loseHP(damage);
 
-                    storyText += ATTACK_TEXT.format(self.name, enemy.name, damage);
-                    console.log(ATTACK_TEXT.format(self.entity.tag,
-                        enemy.entity.tag, damage));
+                    storyText += ATTACK_TEXT.fmt(self.name, VERBS[subj].ATTACK,
+                        enemy.name, damage);
+                    console.log(ATTACK_TEXT.fmt(self.tag, VERBS[subj].ATTACK,
+                        enemy.tag, damage));
 
                     // battle has ended when the enemy dies
-                    if(enemy.entity.hp() === 0) {
+                    if (enemy.entity.hp() === 0 ||
+                        enemy.entity.energy() === 0) {
 
-                        // check if player lost the battle
-                        if(enemy.entity === me) {
-                            // TODO: go to Losing Screen
-                            console.error("You Lost");
-                        }
-
-                        self.entity.loot(enemy.entity);
-
-                        // remove dead from this battle, activeMonsters, plot
-                        let index = this.fighters.indexOf(enemy);
-                        this.fighters.splice(index, 1);
-
-                        this.totalXP += enemy.entity.deathXP;
-                        enemy.entity.getTile().removePlottable(enemy.entity);
-                        delete activeMonsters[enemy.entity.id];
-
-                        console.log(DEAD_TEXT.format(enemy.entity.tag));
-                        storyText += DEAD_TEXT.format(enemy.name);
+                        storyText += this.removeFighterFromBattle(self, enemy,
+                            subj);
 
                         // no more enemies left
-                        if(this.fighters.length === 1) {
-                            storyText += FIGHT_END_TEXT.format(self.name, enemy.name);
+                        if (this.fighters.length === 1) {
+                            storyText += END_TEXT.fmt(self.name, enemy.name,
+                                VERBS[subj].END);
+                            console.log(END_TEXT.fmt(self.tag, enemy.tag,
+                                VERBS[subj].END));
                         }
+
+                        if (enemy === me) return storyText;
                     }
                     break;
 
                 case "Defend":
                     self.defense *= DEFEND_MODIFIER;
 
-                    storyText += self.name + " took a defensive stance.";
-                    console.log(DEFEND_TEXT.format(self.entity.tag));
+                    storyText += DEFEND_TEXT.fmt(self.name, VERBS[subj].DEFEND);
+                    console.log(DEFEND_TEXT.fmt(self.tag, VERBS[subj].DEFEND));
                     break;
 
                 case "Run":
                     // randomly choose an adjacent square to run to
                     let random = Math.floor(Math.random() * 4);
-                    switch(random) {
+                    switch (random) {
                         case 0:
                             self.entity.move(0, -1);
                             break;
@@ -170,23 +191,52 @@ export default class Battle {
                     let index = this.fighters.indexOf(self);
                     this.fighters.splice(index, 1);
 
-                    storyText += ESCAPE_TEXT.format(self.name);
-                    console.log(ESCAPE_TEXT.format(self.entity.tag));
+                    storyText += RUN_TEXT.fmt(self.name, VERBS[subj].RUN);
+                    console.log(RUN_TEXT.fmt(self.tag, VERBS[subj].RUN));
             }
 
             // energy cost may be dependent on entity
             self.entity.loseEnergy(self.entity.energyCost(self.command));
 
-            if(this.fighters.length === 1){
+            if (this.fighters.length === 1) {
                 break;
             }
         }
 
         // reset modifiers after each round
-        for(let i = 0; i < this.fighters.length; i++) {
+        for (let i = 0; i < this.fighters.length; i++) {
             this.fighters[i].attack = this.fighters[i].entity.strength();
             this.fighters[i].defense = this.fighters[i].entity.strength();
         }
+
+        return storyText;
+    }
+
+    removeFighterFromBattle(self, enemy, subj) {
+        let storyText = "";
+
+        // switch the subj for the die text
+        if (subj === "ME") subj = "OTHER";
+        else subj = "ME";
+
+        storyText += DIE_TEXT.fmt(enemy.name, VERBS[subj].DIE);
+        console.log(DIE_TEXT.fmt(enemy.tag, VERBS[subj].DIE));
+
+        // remove dead from this battle, activeMonsters, plot
+        let index = this.fighters.indexOf(enemy);
+        this.fighters.splice(index, 1);
+        enemy.entity.getTile().removePlottable(enemy.entity);
+        enemy.entity.die();
+
+        if (enemy.entity === me) {
+            // TODO: go to Losing Screen
+            console.error("You died");
+            return;
+        }
+
+        this.totalXP += enemy.entity.deathXP;
+
+        delete activeMonsters[enemy.entity.id];
 
         return storyText;
     }
@@ -196,54 +246,54 @@ export default class Battle {
      */
     battle() {
         let battleText = BATTLE_INFO;
-        for(let fighter of this.fighters) {
-            battleText += fighter.entity.tag + ", ";
+        for (let fighter of this.fighters) {
+            battleText += fighter.tag + ", ";
         }
         console.log(battleText);
 
-        while(this.fighters.length > 1) {
+        while (this.fighters.length > 1) {
             // randomly choose an action for each fighter each time
-            for(let fighter of this.fighters) {
-                fighter.setCommand(this.chooseAction(fighter.entity));
+            for (let fighter of this.fighters) {
+                fighter.setCommand(fighter.entity.chooseAction());
             }
-            this.fighters.sort(function(a, b){ return b.speed - a.speed});
+            this.fighters.sort(function (a, b) {
+                return b.speed - a.speed
+            });
 
             this.turn();
 
-            if(this.actionOccurred === false) {
+            if (this.actionOccurredThisTurn === false) {
                 console.log("Everyone is too tired to fight");
-                for(let fighter of this.fighters) {
+                for (let fighter of this.fighters) {
                     fighter.entity.rest();
                 }
                 break;
             }
         }
-    }
 
-    /**
-     * Randomly chooses an action for the entity to take
-     * @param entity
-     * @returns {string}
-     */
-    chooseAction(entity) {
-        let randomAction = Math.floor(Math.random() * 3);
-        switch(randomAction) {
-            case 0: return "Attack";
-            case 1: return "Defend";
-            case 2: return "Attack";
+        this.fighters[0].entity.gainXP(this.totalXP);
+        for (let entity of this.entityList) {
+            if (this.fighters[0].entity === entity) continue;
+
+            this.fighters[0].entity.loot(entity);
         }
     }
 
     static actionSpeed(command) {
-        switch(command) {
-            case "Attack":        return 1;
-            case "Defend":        return 2;
-            case "Inventory":     return 1;
-            case "Run":         return 3;
+        switch (command) {
+            case "Attack":
+                return 1;
+            case "Defend":
+                return 2;
+            case "Inventory":
+                return 1;
+            case "Run":
+                return 3;
         }
     }
 
 }
+
 class Fighter {
     /**
      * @param {Entity} entity
@@ -251,6 +301,7 @@ class Fighter {
      */
     constructor(entity, command) {
         this.name = entity.name;
+        this.tag = entity.tag;
         this.entity = entity;
         this.defense = entity.strength();
         this.attack = entity.strength();
@@ -264,6 +315,6 @@ class Fighter {
 
         // larger number is faster
         this.speed = this.entity.agility() * this.entity.fatigue() *
-                        Battle.actionSpeed(command);
+            Battle.actionSpeed(command);
     }
 }

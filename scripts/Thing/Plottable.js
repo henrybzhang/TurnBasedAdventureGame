@@ -58,11 +58,11 @@ export default class Plottable extends Thing {
 
         if(this.xPos === -1 || this.yPos === -1) {
             console.log("Not adding {0} to plot due to invalid coordinates"
-                .format(this.name));
+                .fmt(this.name));
             return;
         }
 
-        console.log("Adding {0} to {1} at ({2}, {3})".format(this.tag,
+        console.log("Adding {0} to {1} at ({2}, {3})".fmt(this.tag,
             this.parentPlace.tag, this.xPos, this.yPos));
 
         this.parentPlace.addToPlot(this);
@@ -70,5 +70,9 @@ export default class Plottable extends Thing {
 
     getTile() {
         return this.parentPlace.getTile(this.xPos, this.yPos);
+    }
+
+    info() {
+        return this.name + '\n';
     }
 }

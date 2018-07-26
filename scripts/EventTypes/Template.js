@@ -10,7 +10,7 @@ export default class Template extends Event {
         if(command in this.eventObject) {
             return this.eventObject[command];
         }
-        console.log("{0} not found in Template class".format(command));
+        console.log("{0} not found in Template class".fmt(command));
         return this;
     }
 }

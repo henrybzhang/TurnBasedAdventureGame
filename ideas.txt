@@ -5,16 +5,18 @@ Quests:
 
 Items:
     Consuming items - make food part of the game?
-
-Fighting:
-    Make items effect fighting
-    Make stats depend on fatigue
+    Add effects to consuming items
 
 Game play:
     Make monsters have an action every 15 min? even is player or monster is resting
+    Present or past tense for words?
 
-UI:
+Economy:
+    Make prices fluctuate
+
+UI/UX:
 Date/Time above Map
 Name of parentPlace above map
+Make keyboard keys correspond to buttons
 
 Don't need to show stats until player detail screen

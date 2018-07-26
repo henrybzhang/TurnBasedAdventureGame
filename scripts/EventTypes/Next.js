@@ -15,10 +15,6 @@ export default class Next extends Event {
             console.error("There is nowhere to go after this event");
         }
 
-        if(this.nextEvent instanceof Gear) {
-            return this.nextEvent.chooseNewEvent(this.prevCommand);
-        }
-
         return this.nextEvent;
     }
 }

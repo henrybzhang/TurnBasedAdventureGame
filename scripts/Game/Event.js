@@ -14,10 +14,6 @@ export default class Event {
 
         this.nextEvent = nextEvent;
         this.other = other;
-
-        this.timeTaken = 0;
-
-        console.log(this.title);
     }
 
     /**
@@ -28,6 +24,10 @@ export default class Event {
      */
     chooseNewEvent(command) {
         console.error('You have to implement this abstract chooseNewEvent method');
+    }
+
+    findTimeTaken(command) {
+        return 0;
     }
 
     /**

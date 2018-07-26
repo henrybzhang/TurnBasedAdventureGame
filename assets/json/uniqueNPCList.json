@@ -1,7 +1,7 @@
 {
   "Soldier Caravan": {
     "name": "Soldier Caravan",
-    "desc": "A group of soldiers preparing for a journey.",
+    "desc": "A group of soldiers preparing for a journey.\n",
     "inventory": {},
     "wealthLevel": 4,
     "type": "HUMAN",

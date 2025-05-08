@@ -352,7 +352,7 @@ export default class Entity extends Mobile {
 
     statInfo() {
         return STAT_INFO.fmt(this.level, this.hp(), this.energy(),
-            this.agility(), this.strength());
+            Math.floor(this.agility()), Math.floor(this.strength()));
     }
 
     moneyInfo() {
